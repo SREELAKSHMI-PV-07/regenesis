@@ -315,50 +315,95 @@ Feasibility Score: {feasibility_score}
 import google.generativeai as genai
 import os
 
+# ---------------- LAYER 4 ----------------
 st.divider()
-st.subheader("⭐ Layer 4 – AI Startup Generator")
+
+st.markdown("<div class='section-title'>AI Startup Blueprint</div>", unsafe_allow_html=True)
 
 st.markdown("""
 Turn your feasibility analysis into a complete startup blueprint using AI.
 """)
 
+# -------- Gemini Setup --------
+import google.generativeai as genai
+
+try:
+    genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
+except Exception:
+    st.error("Google API Key not found. Please add it in Streamlit Secrets.")
+    st.stop()
+
 if st.button("🚀 Generate AI Startup Blueprint"):
 
     with st.spinner("Building your circular startup..."):
 
-        model = genai.GenerativeModel("gemini-1.5-flash")
+        try:
+            model = genai.GenerativeModel("gemini-1.5-flash-latest")
 
-        prompt = f"""
-You are a startup mentor.
+            prompt = f"""
+You are a professional circular economy startup mentor.
 
+Context:
 Waste Type: {waste_type}
 Country: {country}
 Feasibility Score: {feasibility_score}
 
-Generate:
+Generate a structured startup blueprint with clear headings:
 
 1. Startup Name
 2. Problem Statement
 3. Solution
 4. Revenue Model
 5. 6 Month Action Plan
-6. 30 Second Pitch
+6. 30 Second Investor Pitch
+
+Make it realistic, practical, and aligned with feasibility score.
+Keep formatting clean with headings.
 """
 
-        response = model.generate_content(prompt)
+            response = model.generate_content(prompt)
 
-        st.success("Your AI Startup Blueprint is ready!")
+            ai_text = response.text
 
-        st.markdown("""
-        <style>
-        .generator-card {
-            background:#020617;
-            padding:25px;
-            border-radius:18px;
-        }
-        </style>
-        """, unsafe_allow_html=True)
+            st.success("Your AI Startup Blueprint is ready!")
 
-        st.markdown('<div class="generator-card">', unsafe_allow_html=True)
-        st.markdown(response.text)
-        st.markdown('</div>', unsafe_allow_html=True)
+            # -------- Premium Card Styling --------
+            st.markdown("""
+            <style>
+            .generator-card {
+                background: rgba(255,255,255,0.05);
+                padding:30px;
+                border-radius:20px;
+                backdrop-filter: blur(10px);
+                box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+                margin-top:20px;
+            }
+            </style>
+            """, unsafe_allow_html=True)
+
+            st.markdown('<div class="generator-card">', unsafe_allow_html=True)
+            st.markdown(ai_text)
+            st.markdown('</div>', unsafe_allow_html=True)
+
+            # -------- PDF Download --------
+            styles = getSampleStyleSheet()
+            tmp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
+            doc = SimpleDocTemplate(tmp_file.name)
+            story = []
+
+            for line in ai_text.split("\n"):
+                story.append(Paragraph(line, styles["Normal"]))
+                story.append(Spacer(1, 6))
+
+            doc.build(story)
+
+            with open(tmp_file.name, "rb") as f:
+                st.download_button(
+                    label="📄 Download AI Blueprint PDF",
+                    data=f,
+                    file_name="ai_startup_blueprint.pdf",
+                    mime="application/pdf"
+                )
+
+        except Exception as e:
+            st.error("AI generation failed. Please check model access or billing in Google Cloud.")
