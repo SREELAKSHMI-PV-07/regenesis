@@ -228,8 +228,8 @@ with col4:
     st.markdown("### ⚡ Feasibility Progress")
     progress = st.progress(0)
     for i in range(int(feasibility_score)):
-    time.sleep(0.005)
-    progress.progress(i + 1)
+        time.sleep(0.005)
+        progress.progress(i + 1)
 
 st.caption(f"Current Feasibility Score: {feasibility_score}")
 
