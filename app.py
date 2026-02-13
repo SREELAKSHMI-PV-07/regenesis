@@ -30,13 +30,6 @@ def load_data():
         .str.lower()
     )
 
-    country_df["mismanaged"] = (
-        country_df["mismanaged"]
-        .astype(str)
-        .str.replace("%", "", regex=False)
-        .str.strip()
-    )
-
     country_df["mismanaged"] = pd.to_numeric(
         country_df["mismanaged"],
         errors="coerce"
@@ -95,9 +88,18 @@ demand_score = float(row["demand_score_1_to_10"])
 match = country_df[country_df["country"] == selected_country]
 
 if match.empty:
-    mismanaged = 5
+    mismanaged = 0
 else:
     mismanaged = float(match["mismanaged"].values[0])
+
+# ---------------- NORMALIZE METRIC TONNES ----------------
+# Normalize relative to max country waste to avoid score explosion
+max_mismanaged = country_df["mismanaged"].max()
+
+if max_mismanaged > 0:
+    mismanaged_normalized = mismanaged / max_mismanaged
+else:
+    mismanaged_normalized = 0
 
 # ---------------- INTEGRATED MODEL ----------------
 
@@ -105,7 +107,9 @@ price_inr = price_usd * 80
 market_value = quantity * price_inr
 
 scale_factor = 1 + (quantity / 500)
-mismanaged_factor = 1 + (mismanaged / 100 * 5)
+
+# Use normalized tonnage in scoring
+mismanaged_factor = 1 + (mismanaged_normalized * 3)
 
 raw_score = (price_usd * demand_score) * scale_factor * mismanaged_factor
 feasibility_score = round(min(100, raw_score), 2)
@@ -124,13 +128,16 @@ st.subheader("📊 Opportunity Dashboard")
 c1, c2, c3, c4 = st.columns(4)
 
 c1.metric("💰 Revenue Potential (₹)", f"{round(market_value,2):,}")
-c2.metric("🌍 Mismanaged Waste", round(mismanaged, 2))
+
+# ✅ Added (Metric Tonnes) label + formatted number
+c2.metric("🌍 Mismanaged Waste (Metric Tonnes)", f"{mismanaged:,.0f}")
+
 c3.metric("📦 Scale Multiplier", round(scale_factor, 2))
 c4.metric("📈 Feasibility Score", feasibility_score)
 
 st.markdown(f"### Status: {status}")
 
-# ---------------- FEASIBILITY EXPLANATION (NOW BELOW STATUS) ----------------
+# ---------------- FEASIBILITY EXPLANATION ----------------
 st.markdown("### 🎯 What the Feasibility Score Means")
 
 if feasibility_score < 30:
@@ -149,7 +156,7 @@ with st.expander("ℹ️ How Feasibility Score Works"):
 • Scale efficiency → Larger quantities improve viability  
 • Environmental pressure → Higher mismanaged waste increases opportunity  
 
-All factors integrate to estimate circular business feasibility.
+Mismanaged waste is represented in Metric Tonnes and normalized relative to the highest observed country value.
 """)
 
 st.caption("ReGenesis – Circular Economy Intelligence | Layer 1 MVP")
