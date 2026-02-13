@@ -375,7 +375,7 @@ Keep output structured and practical.
 
         else:
             st.error("OpenRouter failed. Check API key or quota.")
-                st.markdown('</div>', unsafe_allow_html=True)
+            st.markdown('</div>', unsafe_allow_html=True)
 
             except Exception as e:
                 st.error("AI generation failed. Please check your API key or usage limits.")
