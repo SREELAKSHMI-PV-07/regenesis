@@ -225,12 +225,18 @@ with col3:
     """, unsafe_allow_html=True)
 
 with col4:
-    st.markdown(f"""
-    <div class="glass-card">
-        <div class="card-title">Feasibility Score</div>
-        <div class="card-value">{feasibility_score}</div>
-    </div>
-    """, unsafe_allow_html=True)
+   # ---------------- FEASIBILITY PROGRESS ----------------
+st.markdown("### ⚡ Feasibility Progress")
+
+progress = st.progress(0)
+
+# Smooth animation (fast, not laggy)
+for i in range(int(feasibility_score)):
+    time.sleep(0.005)
+    progress.progress(i + 1)
+
+st.caption(f"Current Feasibility Score: {feasibility_score}")
+
 
 # ---------------- IMPACT SIMULATOR ----------------
 st.markdown("""
