@@ -317,17 +317,21 @@ Feasibility Score: {feasibility_score}
 # ================= LAYER 4 =================
 st.divider()
 
-# -------- Centered Heading Like Layer 2 --------
+# -------- Consistent Heading (Same Style As Other Layers) --------
 st.markdown("""
 <div class="hero">
-    <h2 style="font-size:36px;">⭐ Startup Blueprint Generator</h2>
-    <p style="font-size:16px;color:#94A3B8;">
-    Structured strategic intelligence based on feasibility insights
-    </p>
+    <h1>Startup Blueprint Generator</h1>
+    <p>Structured strategic intelligence powered by feasibility insights</p>
 </div>
 """, unsafe_allow_html=True)
 
-if st.button("🚀 Generate Strategic Blueprint"):
+# -------- Center Button --------
+center_col1, center_col2, center_col3 = st.columns([1,2,1])
+
+with center_col2:
+    generate_bp = st.button("🚀 Generate Strategic Blueprint", use_container_width=True)
+
+if generate_bp:
 
     # -------- Dynamic Logic --------
     if feasibility_score < 30:
@@ -350,7 +354,7 @@ if st.button("🚀 Generate Strategic Blueprint"):
 
     st.success("Your Strategic Blueprint is ready!")
 
-    # -------- KPI Cards Layout --------
+    # -------- KPI Cards --------
     k1, k2, k3, k4 = st.columns(4)
 
     with k1:
