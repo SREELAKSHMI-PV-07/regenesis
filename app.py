@@ -14,15 +14,13 @@ def load_data():
     # Load market data
     market_df = pd.read_csv("plastic_market_prices.csv")
     market_df.columns = market_df.columns.str.strip()
-
-    # Remove unwanted Excel index columns if any
     market_df = market_df.loc[:, ~market_df.columns.str.contains("^Unnamed")]
 
     # Load country data
     country_df = pd.read_excel("country_data.xlsx").iloc[:, :2]
     country_df.columns = ["country", "mismanaged"]
 
-    # Clean data
+    # Clean country names safely
     country_df["country"] = (
         country_df["country"]
         .astype(str)
@@ -30,6 +28,7 @@ def load_data():
         .str.strip()
     )
 
+    # Clean mismanaged column
     country_df["mismanaged"] = (
         country_df["mismanaged"]
         .astype(str)
@@ -41,7 +40,6 @@ def load_data():
         errors="coerce"
     )
 
-    # Remove empty rows
     country_df = country_df.dropna()
     country_df = country_df.reset_index(drop=True)
 
@@ -76,7 +74,8 @@ with col3:
     country_list = sorted(country_df["country"].unique())
     country = st.selectbox("Select Country", country_list)
 
-country = country.lower().strip()
+# SAFE country conversion (fixes your crash)
+selected_country = str(country).lower().strip()
 
 st.divider()
 
@@ -88,7 +87,7 @@ demand_score = float(row["demand_score_1_to_10"])
 
 # ---------------- COUNTRY MATCHING ----------------
 match = country_df[
-    country_df["country"].str.contains(country, case=False, na=False)
+    country_df["country"].str.contains(selected_country, case=False, na=False)
 ]
 
 if match.empty:
@@ -105,7 +104,7 @@ market_value = quantity * price_inr
 # Scale multiplier
 scale_factor = 1 + (quantity / 500)
 
-# Environmental opportunity factor
+# Environmental multiplier
 mismanaged_factor = 1 + (mismanaged / 100 * 5)
 
 # Feasibility calculation
@@ -134,11 +133,6 @@ st.markdown(f"### Status: {status}")
 
 st.divider()
 
-# ---------------- CLEAN DATA PREVIEW ----------------
-with st.expander("📂 Cleaned Country Data (Preview)"):
-    st.dataframe(country_df, hide_index=True)
-
-# ---------------- INFO ----------------
 with st.expander("ℹ️ How Feasibility Score Works"):
     st.write("""
 • Market strength → Price × Demand  
