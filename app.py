@@ -11,28 +11,35 @@ st.set_page_config(
 # ---------------- LOAD DATA ----------------
 @st.cache_data
 def load_data():
-    # Load market data
+    # ---------------- MARKET DATA ----------------
     market_df = pd.read_csv("plastic_market_prices.csv")
     market_df.columns = market_df.columns.str.strip()
     market_df = market_df.loc[:, ~market_df.columns.str.contains("^Unnamed")]
 
-    # Load country data
-    country_df = pd.read_excel("country_data.xlsx").iloc[:, :2]
+    # ---------------- COUNTRY DATA ----------------
+    country_df = pd.read_excel("country_data.xlsx")
+
+    # Remove completely empty columns
+    country_df = country_df.dropna(axis=1, how="all")
+
+    # Automatically take first two meaningful columns
+    country_df = country_df.iloc[:, :2]
     country_df.columns = ["country", "mismanaged"]
 
-    # Clean country names safely
+    # Clean country names
     country_df["country"] = (
         country_df["country"]
         .astype(str)
-        .str.lower()
         .str.strip()
+        .str.lower()
     )
 
-    # Clean mismanaged column
+    # Clean mismanaged values safely
     country_df["mismanaged"] = (
         country_df["mismanaged"]
         .astype(str)
         .str.replace("%", "", regex=False)
+        .str.strip()
     )
 
     country_df["mismanaged"] = pd.to_numeric(
@@ -40,7 +47,8 @@ def load_data():
         errors="coerce"
     )
 
-    country_df = country_df.dropna()
+    # Drop only rows where country is missing
+    country_df = country_df.dropna(subset=["country"])
     country_df = country_df.reset_index(drop=True)
 
     return market_df, country_df
@@ -72,9 +80,13 @@ with col2:
 
 with col3:
     country_list = sorted(country_df["country"].unique())
+
+    if len(country_list) == 0:
+        st.error("No country data found. Please check country_data.xlsx")
+        st.stop()
+
     country = st.selectbox("Select Country", country_list)
 
-# SAFE country conversion (fixes your crash)
 selected_country = str(country).lower().strip()
 
 st.divider()
@@ -85,9 +97,9 @@ row = market_df[market_df["category"] == waste_type].iloc[0]
 price_usd = float(row["avg_price_per_kg_usd"])
 demand_score = float(row["demand_score_1_to_10"])
 
-# ---------------- COUNTRY MATCHING ----------------
+# ---------------- COUNTRY MATCH ----------------
 match = country_df[
-    country_df["country"].str.contains(selected_country, case=False, na=False)
+    country_df["country"] == selected_country
 ]
 
 if match.empty:
@@ -97,18 +109,15 @@ else:
 
 # ---------------- INTEGRATED MODEL ----------------
 
-# Revenue potential
 price_inr = price_usd * 80
 market_value = quantity * price_inr
 
-# Scale multiplier
 scale_factor = 1 + (quantity / 500)
 
-# Environmental multiplier
 mismanaged_factor = 1 + (mismanaged / 100 * 5)
 
-# Feasibility calculation
 raw_score = (price_usd * demand_score) * scale_factor * mismanaged_factor
+
 feasibility_score = round(min(100, raw_score), 2)
 
 # ---------------- STATUS ----------------
