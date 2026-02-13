@@ -314,48 +314,93 @@ Feasibility Score: {feasibility_score}
             mime="application/pdf"
         )
     
+# ================= LAYER 4 =================
 st.divider()
-st.markdown("## ⭐ Startup Blueprint Generator")
+
+# -------- Centered Heading Like Layer 2 --------
+st.markdown("""
+<div class="hero">
+    <h2 style="font-size:36px;">⭐ Startup Blueprint Generator</h2>
+    <p style="font-size:16px;color:#94A3B8;">
+    Structured strategic intelligence based on feasibility insights
+    </p>
+</div>
+""", unsafe_allow_html=True)
 
 if st.button("🚀 Generate Strategic Blueprint"):
 
+    # -------- Dynamic Logic --------
     if feasibility_score < 30:
-        strategy = "Validation & Risk Reduction Strategy"
-        focus = "Small-scale pilot + local partnerships"
-        investment = "Low capital deployment"
+        strategy = "Validation Strategy"
+        risk = "High"
+        scale_plan = "Local Pilot"
+        revenue_model = "Small Batch B2B Sales"
     elif feasibility_score < 70:
-        strategy = "Moderate Growth Strategy"
-        focus = "MVP launch + B2B partnerships"
-        investment = "Structured phased expansion"
+        strategy = "Growth Strategy"
+        risk = "Moderate"
+        scale_plan = "City Expansion"
+        revenue_model = "B2B Contracts + Subscriptions"
     else:
-        strategy = "Aggressive Scale Strategy"
-        focus = "High-volume production + investor funding"
-        investment = "Rapid scaling & automation"
+        strategy = "Scale Strategy"
+        risk = "Low"
+        scale_plan = "Multi-City Expansion"
+        revenue_model = "Industrial Supply + Investors"
 
-    st.markdown(f"""
-### 🏷 Startup Name  
-EcoCycle {waste_type.replace(" ", "")}
+    startup_name = f"Eco{waste_type.replace(' ', '')} Solutions"
 
-### 🎯 Strategy Type  
-{strategy}
+    st.success("Your Strategic Blueprint is ready!")
 
-### 🧩 Problem  
-High mismanaged waste in {country.title()} creates environmental and economic inefficiencies.
+    # -------- KPI Cards Layout --------
+    k1, k2, k3, k4 = st.columns(4)
 
-### 💡 Solution  
-Convert {waste_type} into market-ready recycled materials through structured collection and processing.
+    with k1:
+        st.markdown(f"""
+        <div class="glass-card">
+            <div class="card-title">🏷 Startup Name</div>
+            <div class="card-value">{startup_name}</div>
+        </div>
+        """, unsafe_allow_html=True)
 
-### 💰 Revenue Model  
-• Direct B2B sales  
-• Subscription contracts  
-• Circular partnerships  
+    with k2:
+        st.markdown(f"""
+        <div class="glass-card">
+            <div class="card-title">🎯 Strategy</div>
+            <div class="card-value">{strategy}</div>
+        </div>
+        """, unsafe_allow_html=True)
 
-### 🚀 Execution Focus  
-{focus}
+    with k3:
+        st.markdown(f"""
+        <div class="glass-card">
+            <div class="card-title">⚠ Risk Level</div>
+            <div class="card-value">{risk}</div>
+        </div>
+        """, unsafe_allow_html=True)
 
-### 💵 Investment Approach  
-{investment}
+    with k4:
+        st.markdown(f"""
+        <div class="glass-card">
+            <div class="card-title">📈 Scaling Plan</div>
+            <div class="card-value">{scale_plan}</div>
+        </div>
+        """, unsafe_allow_html=True)
 
-### 🎤 30-Second Pitch  
-We transform waste into value by converting {waste_type} into sustainable revenue streams while reducing environmental impact in {country.title()}.
-""")
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    k5, k6 = st.columns(2)
+
+    with k5:
+        st.markdown(f"""
+        <div class="glass-card">
+            <div class="card-title">💰 Revenue Model</div>
+            <div class="card-value">{revenue_model}</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with k6:
+        st.markdown(f"""
+        <div class="glass-card">
+            <div class="card-title">🌍 Target Market</div>
+            <div class="card-value">{country.title()}</div>
+        </div>
+        """, unsafe_allow_html=True)
