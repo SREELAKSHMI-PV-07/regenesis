@@ -328,7 +328,7 @@ Turn your feasibility analysis into a complete startup blueprint using AI.
 import google.generativeai as genai
 
 try:
-    genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
+    genai.configure(api_key=st.secrets["AIzaSyB_CH5d-b01ixW22pj8VRPziTG--n8QAlg"])
 except Exception:
     st.error("Google API Key not found. Please add it in Streamlit Secrets.")
     st.stop()
