@@ -16,15 +16,19 @@ st.set_page_config(
 @st.cache_data
 def load_data():
     market_df = pd.read_csv("plastic_market_prices.csv")
-    country_df["Country"] = country_df["Country"].str.strip().str.lower()
+
     country_df = pd.read_excel("country_data.xlsx").iloc[:, :2]
     country_df.columns = ["country", "mismanaged"]
+
+    # Clean country names
+    country_df["country"] = country_df["country"].astype(str).str.strip().str.lower()
+
     return market_df, country_df
 
 market_df, country_df = load_data()
 
 # -----------------------------
-# Title Section
+# Title
 # -----------------------------
 st.title("♻️ ReGenesis – Feasibility Intelligence Engine")
 st.markdown("### Layer 1: Opportunity & Feasibility Analysis")
@@ -32,7 +36,7 @@ st.markdown("### Layer 1: Opportunity & Feasibility Analysis")
 st.divider()
 
 # -----------------------------
-# User Input Section
+# Inputs
 # -----------------------------
 col1, col2, col3 = st.columns(3)
 
@@ -50,27 +54,33 @@ with col2:
     )
 
 with col3:
-    country_list = sorted(country_df["Country"].unique())
-country = st.selectbox("Select Country", country_list)
+    country_list = sorted(country_df["country"].unique())
+    country = st.selectbox("Select Country", country_list)
 
 st.divider()
 
 # -----------------------------
-# Fetch Values
+# Market Row
 # -----------------------------
 row = market_df[market_df["category"] == waste_type].iloc[0]
 
-price_usd = row["avg_price_per_kg_usd"]
-demand_score = row["demand_score_1_to_10"]
+price_usd = float(row["avg_price_per_kg_usd"])
+demand_score = float(row["demand_score_1_to_10"])
 
-mismanaged = country_df[country_df["country"] == country]["mismanaged"].values[0]
+# -----------------------------
+# Country Row
+# -----------------------------
+country_row = country_df[country_df["country"] == country]
 
-# Convert USD to INR (approx)
-price_inr = price_usd * 80
+if country_row.empty:
+    mismanaged = 1
+else:
+    mismanaged = float(country_row["mismanaged"].values[0])
 
 # -----------------------------
 # Calculations
 # -----------------------------
+price_inr = price_usd * 80
 market_value = quantity * price_inr
 
 market_strength = price_usd * demand_score
@@ -81,7 +91,7 @@ dfs_raw = market_strength * env_score * scale_factor
 feasibility_score = min(100, dfs_raw * 10)
 
 # -----------------------------
-# Score Category
+# Status
 # -----------------------------
 if feasibility_score < 30:
     status = "🔴 High Risk"
@@ -91,30 +101,31 @@ else:
     status = "🟢 High Potential"
 
 # -----------------------------
-# Output Dashboard
+# Dashboard
 # -----------------------------
 st.subheader("📊 Opportunity Dashboard")
 
 c1, c2, c3 = st.columns(3)
 
-c1.metric("💰 Market Value (₹)", f"{round(market_value, 2):,}")
-c2.metric("🌍 Mismanaged Index", round(mismanaged, 2))
-c3.metric("📈 Feasibility Score", round(feasibility_score, 2))
+c1.metric("💰 Market Value (₹)", f"{round(market_value,2):,}")
+c2.metric("🌍 Mismanaged Index", round(mismanaged,2))
+c3.metric("📈 Feasibility Score", round(feasibility_score,2))
 
 st.markdown(f"### Status: {status}")
 
 st.divider()
 
 # -----------------------------
-# Explanation Section
+# Explanation
 # -----------------------------
 with st.expander("ℹ️ How Feasibility Score Works"):
     st.write("""
     The Feasibility Score combines:
-    - Market price & demand
-    - Environmental pressure (mismanaged waste)
-    - Production scale
     
+    • Market price & demand  
+    • Environmental pressure (mismanaged waste)  
+    • Production scale  
+
     It predicts how viable a circular waste-based business is in the selected country.
     """)
 
