@@ -53,12 +53,12 @@ demand_score = float(row["demand_score_1_to_10"])
 
 # ---------------- Country Data ----------------
 
-mismanaged_val = country_df.loc[country_df["country"] == country, "mismanaged"].values
+match = country_df[country_df["country"].str.contains(country, case=False, na=False)]
 
-if len(mismanaged_val) == 0 or pd.isna(mismanaged_val[0]):
+if match.empty:
     mismanaged = 0.5
 else:
-    mismanaged = float(mismanaged_val[0])
+    mismanaged = float(match.iloc[0]["mismanaged"])
 
 # ---------------- Calculations ----------------
 
