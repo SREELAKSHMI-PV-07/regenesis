@@ -59,7 +59,7 @@ st.divider()
 # -----------------------------
 # Fetch Values
 # -----------------------------
-row = market_df[market_df["material_category"] == waste_type].iloc[0]
+row = market_df[market_df["category"] == waste_type].iloc[0]
 
 price_usd = row["avg_price_per_kg_usd"]
 demand_score = row["demand_score_1_to_10"]
