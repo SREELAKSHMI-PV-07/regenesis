@@ -2,11 +2,12 @@ import streamlit as st
 import pandas as pd
 import math
 import time
-import requests
 import tempfile
 from reportlab.lib.pagesizes import A4
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet
+import requests
+
 
 # ---------------- PAGE CONFIG ----------------
 st.set_page_config(
@@ -312,93 +313,68 @@ Feasibility Score: {feasibility_score}
             file_name="regenesis_action_plan.pdf",
             mime="application/pdf"
         )
-# ---------------- LAYER 4 ----------------
-# ===============================
-# 🌟 LAYER 4 — AI STARTUP GENERATOR
-# ===============================
-
-def generate_startup_blueprint(prompt):
-
-    headers = {
-        "Authorization": f"Bearer {st.secrets['OPENROUTER_API_KEY']}",
-        "Content-Type": "application/json"
-    }
-
-    data = {
-        "model": "mistralai/mistral-7b-instruct",
-        "messages": [
-            {"role": "user", "content": prompt}
-        ],
-        "temperature": 0.7,
-        "max_tokens": 800
-    }
-
-    response = requests.post(
-        "https://openrouter.ai/api/v1/chat/completions",
-        headers=headers,
-        json=data
-    )
-
-    result = response.json()
-
-    if "choices" in result:
-        return result["choices"][0]["message"]["content"]
-    else:
-        return "AI generation failed. Please check your API usage."
+    
 st.divider()
-st.markdown("## ⭐ AI Startup Generator")
+st.subheader("🚀 Layer 4 – AI Startup Generator")
 
-st.markdown("""
-Turn your feasibility analysis into a complete startup blueprint powered by AI.
-""")
+weeks = st.slider("Select Roadmap Duration (Weeks)", 4, 24, 12)
 
-# Safety check so app never crashes
-if "OPENROUTER_API_KEY" not in st.secrets:
-    st.warning("⚠️ OPENROUTER_API_KEY not found in Streamlit Secrets.")
-else:
+if st.button("Generate Startup Blueprint"):
 
-    if st.button("🚀 Generate AI Startup Blueprint"):
+    with st.spinner("Building your startup..."):
 
-        with st.spinner("Building your circular startup blueprint..."):
+        api_key = st.secrets["OPENROUTER_API_KEY"]
 
-            prompt = f"""
+        prompt = f"""
 You are a circular economy startup mentor.
 
-Waste Type: {waste_type}
+Waste: {waste_type}
 Country: {country}
-Feasibility Score: {feasibility_score}
+Feasibility: {feasibility_score}
 
 Generate:
 
 1. Startup Name
-2. Problem Statement
-3. Solution Description
+2. Problem
+3. Solution
 4. Revenue Model
-5. 6-Month Execution Plan
-6. 30-Second Investor Pitch
+5. {weeks}-week Action Plan
+6. 30 second Pitch
 
-Keep it structured and professional.
+Keep output structured and practical.
 """
 
-            try:
-                ai_text = generate_startup_blueprint(prompt)
+        headers = {
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json"
+        }
 
-                st.success("Your AI Startup Blueprint is ready!")
+        payload = {
+            "model": "openai/gpt-3.5-turbo",
+            "messages": [
+                {"role": "user", "content": prompt}
+            ]
+        }
 
-                st.markdown("""
-                <style>
-                .ai-card {
-                    background: rgba(255,255,255,0.05);
-                    padding: 25px;
-                    border-radius: 20px;
-                    backdrop-filter: blur(10px);
-                    margin-top:20px;
-                }
-                </style>
-                """, unsafe_allow_html=True)
+        response = requests.post(
+            "https://openrouter.ai/api/v1/chat/completions",
+            headers=headers,
+            json=payload
+        )
 
-                st.markdown('<div class="ai-card">', unsafe_allow_html=True)
-                st.markdown(ai_text)
+        if response.status_code == 200:
+            result = response.json()["choices"][0]["message"]["content"]
+
+            st.success("Startup Blueprint Ready!")
+
+            st.markdown(f"""
+            <div style="background:#020617;padding:25px;border-radius:15px">
+            {result}
+            </div>
+            """, unsafe_allow_html=True)
+
+        else:
+            st.error("OpenRouter failed. Check API key or quota.")
                 st.markdown('</div>', unsafe_allow_html=True)
 
             except Exception as e:
