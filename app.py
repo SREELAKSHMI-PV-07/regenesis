@@ -25,7 +25,6 @@ st.markdown("""
     font-family: 'Inter', sans-serif;
 }
 
-/* Remove Default Divider */
 hr { border: none; }
 
 /* Hero */
@@ -48,7 +47,7 @@ hr { border: none; }
     color:#94A3B8;
 }
 
-/* Impact Section Title */
+/* Section Title (used for Impact + Action Plan) */
 .section-title {
     text-align: center;
     font-size: 36px;
@@ -145,11 +144,9 @@ def load_data():
 
     country_df["country"] = country_df["country"].astype(str).str.strip().str.lower()
     country_df["mismanaged"] = pd.to_numeric(country_df["mismanaged"], errors="coerce")
-
     country_df = country_df.dropna(subset=["country"]).reset_index(drop=True)
 
     return market_df, country_df
-
 
 market_df, country_df = load_data()
 
@@ -171,8 +168,7 @@ with col2:
     quantity = st.number_input("Enter Quantity (kg)", min_value=1, step=10, value=100)
 
 with col3:
-    country_list = sorted(country_df["country"].unique())
-    country = st.selectbox("Select Country", country_list)
+    country = st.selectbox("Select Country", sorted(country_df["country"].unique()))
 
 selected_country = str(country).lower().strip()
 
@@ -201,52 +197,21 @@ st.markdown("## 📊 Opportunity Dashboard")
 col1, col2, col3, col4 = st.columns(4)
 
 with col1:
-    st.markdown(f"""
-    <div class="glass-card">
-        <div class="card-title">Revenue Potential (₹)</div>
-        <div class="card-value">{round(market_value,2):,}</div>
-    </div>
-    """, unsafe_allow_html=True)
+    st.markdown(f"<div class='glass-card'><div class='card-title'>Revenue Potential (₹)</div><div class='card-value'>{round(market_value,2):,}</div></div>", unsafe_allow_html=True)
 
 with col2:
-    st.markdown(f"""
-    <div class="glass-card">
-        <div class="card-title">Mismanaged Waste (MT)</div>
-        <div class="card-value">{mismanaged:,.0f}</div>
-    </div>
-    """, unsafe_allow_html=True)
+    st.markdown(f"<div class='glass-card'><div class='card-title'>Mismanaged Waste (MT)</div><div class='card-value'>{mismanaged:,.0f}</div></div>", unsafe_allow_html=True)
 
 with col3:
-    st.markdown(f"""
-    <div class="glass-card">
-        <div class="card-title">Scale Multiplier</div>
-        <div class="card-value">{round(scale_factor,2)}</div>
-    </div>
-    """, unsafe_allow_html=True)
+    st.markdown(f"<div class='glass-card'><div class='card-title'>Scale Multiplier</div><div class='card-value'>{round(scale_factor,2)}</div></div>", unsafe_allow_html=True)
 
 with col4:
-    with col4:
-    st.markdown(f"""
-    <div class="glass-card">
-        <div class="card-title">Feasibility Score</div>
-        <div class="card-value">{feasibility_score}</div>
-    </div>
-    """, unsafe_allow_html=True)
-# -------- Feasibility Sliding Indicator --------
+    st.markdown(f"<div class='glass-card'><div class='card-title'>Feasibility Score</div><div class='card-value'>{feasibility_score}</div></div>", unsafe_allow_html=True)
 
+# -------- Sliding Progress Bar --------
 st.markdown("<br>", unsafe_allow_html=True)
 
-st.markdown("""
-<div style='text-align:center;
-            font-size:20px;
-            margin-bottom:10px;
-            color:#94A3B8;'>
-Feasibility Progress Indicator
-</div>
-""", unsafe_allow_html=True)
-
 progress = st.progress(0)
-
 for i in range(int(feasibility_score)):
     time.sleep(0.005)
     progress.progress(i + 1)
@@ -258,15 +223,8 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-st.caption(f"Current Feasibility Score: {feasibility_score}")
-
-
 # ---------------- IMPACT SIMULATOR ----------------
-st.markdown("""
-<div class="section-title">
-    Impact Simulator
-</div>
-""", unsafe_allow_html=True)
+st.markdown("<div class='section-title'>Impact Simulator</div>", unsafe_allow_html=True)
 
 monthly_revenue = market_value * 22
 six_month_revenue = monthly_revenue * 6
@@ -281,35 +239,31 @@ i3.metric("👷 Jobs Created", jobs_created)
 i4.metric("🌊 Plastic Diverted (kg)", round(plastic_diverted,2))
 
 # ---------------- ACTION PLAN ----------------
-st.markdown("## 🗺️ Action Plan Generator")
+st.markdown("<div class='section-title'>Startup Action Plan</div>", unsafe_allow_html=True)
 
 weeks = st.slider("Select Roadmap Duration (Weeks)", 4, 24, 12)
 
 if st.button("🚀 Generate Action Plan"):
 
-    st.success("Your personalized roadmap is ready!")
-
     roadmap_text = f"""
 STARTUP ROADMAP
-
 Waste Type: {waste_type}
 Country: {country.title()}
-Feasibility Score: {feasibility_score}%
-
------------------------------------------
+Feasibility Score: {feasibility_score}
 """
+
+    st.success("Your personalized roadmap is ready!")
 
     if weeks >= 1:
         phase1 = "• Validate sourcing\n• Market research\n• Identify customers\n"
-        st.markdown(f"<div class='timeline-card' style='border-color:#22C55E;'><div class='phase-title'>🟢 Phase 1 (Weeks 1–4)</div><div class='phase-content'>{phase1}</div></div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='timeline-card' style='border-color:#22C55E;'><div class='phase-title'>Phase 1 (Weeks 1–4)</div><div class='phase-content'>{phase1}</div></div>", unsafe_allow_html=True)
         roadmap_text += phase1
 
     if weeks >= 5:
         phase2 = "• Build MVP\n• Test workflow\n• Prepare pitch\n"
-        st.markdown(f"<div class='timeline-card' style='border-color:#EAB308;'><div class='phase-title'>🟡 Phase 2 (Weeks 5–8)</div><div class='phase-content'>{phase2}</div></div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='timeline-card' style='border-color:#EAB308;'><div class='phase-title'>Phase 2 (Weeks 5–8)</div><div class='phase-content'>{phase2}</div></div>", unsafe_allow_html=True)
         roadmap_text += phase2
 
-    # PDF
     styles = getSampleStyleSheet()
     tmp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
     doc = SimpleDocTemplate(tmp_file.name, pagesize=A4)
