@@ -70,13 +70,12 @@ demand_score = float(row["demand_score_1_to_10"])
 # -----------------------------
 # Country Row
 # -----------------------------
-country_row = country_df[country_df["country"] == country]
+mismanaged = country_df.loc[country_df["country"].str.contains(country, na=False), "mismanaged"]
 
-if country_row.empty:
-    mismanaged = 1
+if len(mismanaged) > 0:
+    mismanaged = float(mismanaged.values[0])
 else:
-    mismanaged = float(country_row["mismanaged"].values[0])
-
+    mismanaged = 0.5
 # -----------------------------
 # Calculations
 # -----------------------------
