@@ -378,4 +378,4 @@ Keep output structured and practical.
             st.markdown('</div>', unsafe_allow_html=True)
 
             except Exception as e:
-                st.error("AI generation failed. Please check your API key or usage limits.")
+            st.error("AI generation failed. Please check your API key or usage limits.")
