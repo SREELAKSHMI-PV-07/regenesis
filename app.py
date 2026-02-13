@@ -24,6 +24,8 @@ st.markdown("""
     font-family: 'Inter', sans-serif;
 }
 
+hr { border: none; }
+
 .hero {
     text-align:center;
     padding-top:50px;
@@ -97,6 +99,7 @@ st.markdown("""
 .phase-title {
     font-size: 18px;
     font-weight: 600;
+    margin-bottom: 8px;
 }
 
 .phase-content {
@@ -169,7 +172,7 @@ def load_data():
     country_df = pd.read_excel("country_data.xlsx")
     country_df = country_df.iloc[:, :2]
     country_df.columns = ["country", "mismanaged"]
-    country_df["country"] = country_df["country"].astype(str).str.lower().str.strip()
+    country_df["country"] = country_df["country"].astype(str).str.strip().str.lower()
     country_df["mismanaged"] = pd.to_numeric(country_df["mismanaged"], errors="coerce")
     return market_df, country_df
 
@@ -188,8 +191,10 @@ col1, col2, col3 = st.columns(3)
 
 with col1:
     waste_type = st.selectbox("Select Waste Type", market_df["category"].unique())
+
 with col2:
-    quantity = st.number_input("Enter Quantity (kg)", min_value=1, value=100)
+    quantity = st.number_input("Enter Quantity (kg)", min_value=1, step=10, value=100)
+
 with col3:
     country = st.selectbox("Select Country", sorted(country_df["country"].unique()))
 
@@ -210,14 +215,18 @@ feasibility_score = round(min(100, raw_score), 2)
 
 # ---------------- DASHBOARD ----------------
 st.markdown("## 📊 Opportunity Dashboard")
+
 c1,c2,c3,c4 = st.columns(4)
 
 with c1:
     st.markdown(f"<div class='glass-card'><div class='card-title'>Revenue Potential (₹)</div><div class='card-value'>{round(market_value,2):,}</div></div>", unsafe_allow_html=True)
+
 with c2:
     st.markdown(f"<div class='glass-card'><div class='card-title'>Mismanaged Waste (MT)</div><div class='card-value'>{mismanaged:,.0f}</div></div>", unsafe_allow_html=True)
+
 with c3:
     st.markdown(f"<div class='glass-card'><div class='card-title'>Scale Multiplier</div><div class='card-value'>{round(scale_factor,2)}</div></div>", unsafe_allow_html=True)
+
 with c4:
     st.markdown(f"<div class='glass-card'><div class='card-title'>Feasibility Score</div><div class='card-value'>{feasibility_score}</div></div>", unsafe_allow_html=True)
 
