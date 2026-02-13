@@ -38,7 +38,7 @@ col1, col2, col3 = st.columns(3)
 with col1:
     waste_type = st.selectbox(
         "Select Waste Type",
-        market_df["material_category"].unique()
+        market_df["category"].unique()
     )
 
 with col2:
