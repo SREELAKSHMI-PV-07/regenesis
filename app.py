@@ -315,67 +315,47 @@ Feasibility Score: {feasibility_score}
         )
     
 st.divider()
-st.subheader("🚀 Layer 4 – AI Startup Generator")
+st.markdown("## ⭐ Startup Blueprint Generator")
 
-weeks = st.slider("Select Roadmap Duration (Weeks)", 4, 24, 12)
+if st.button("🚀 Generate Strategic Blueprint"):
 
-if st.button("Generate Startup Blueprint"):
+    if feasibility_score < 30:
+        strategy = "Validation & Risk Reduction Strategy"
+        focus = "Small-scale pilot + local partnerships"
+        investment = "Low capital deployment"
+    elif feasibility_score < 70:
+        strategy = "Moderate Growth Strategy"
+        focus = "MVP launch + B2B partnerships"
+        investment = "Structured phased expansion"
+    else:
+        strategy = "Aggressive Scale Strategy"
+        focus = "High-volume production + investor funding"
+        investment = "Rapid scaling & automation"
 
-    with st.spinner("Building your startup..."):
+    st.markdown(f"""
+### 🏷 Startup Name  
+EcoCycle {waste_type.replace(" ", "")}
 
-        api_key = st.secrets["OPENROUTER_API_KEY"]
+### 🎯 Strategy Type  
+{strategy}
 
-        prompt = f"""
-You are a circular economy startup mentor.
+### 🧩 Problem  
+High mismanaged waste in {country.title()} creates environmental and economic inefficiencies.
 
-Waste: {waste_type}
-Country: {country}
-Feasibility: {feasibility_score}
+### 💡 Solution  
+Convert {waste_type} into market-ready recycled materials through structured collection and processing.
 
-Generate:
+### 💰 Revenue Model  
+• Direct B2B sales  
+• Subscription contracts  
+• Circular partnerships  
 
-1. Startup Name
-2. Problem
-3. Solution
-4. Revenue Model
-5. {weeks}-week Action Plan
-6. 30 second Pitch
+### 🚀 Execution Focus  
+{focus}
 
-Keep output structured and practical.
-"""
+### 💵 Investment Approach  
+{investment}
 
-        headers = {
-            "Authorization": f"Bearer {api_key}",
-            "Content-Type": "application/json"
-        }
-
-        payload = {
-            "model": "openai/gpt-3.5-turbo",
-            "messages": [
-                {"role": "user", "content": prompt}
-            ]
-        }
-
-        response = requests.post(
-            "https://openrouter.ai/api/v1/chat/completions",
-            headers=headers,
-            json=payload
-        )
-
-        if response.status_code == 200:
-            result = response.json()["choices"][0]["message"]["content"]
-
-            st.success("Startup Blueprint Ready!")
-
-            st.markdown(f"""
-            <div style="background:#020617;padding:25px;border-radius:15px">
-            {result}
-            </div>
-            """, unsafe_allow_html=True)
-
-        else:
-            st.error("OpenRouter failed. Check API key or quota.")
-            st.markdown('</div>', unsafe_allow_html=True)
-
-            except Exception as e:
-            st.error("AI generation failed. Please check your API key or usage limits.")
+### 🎤 30-Second Pitch  
+We transform waste into value by converting {waste_type} into sustainable revenue streams while reducing environmental impact in {country.title()}.
+""")
