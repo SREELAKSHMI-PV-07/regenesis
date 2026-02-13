@@ -312,10 +312,6 @@ Feasibility Score: {feasibility_score}
             file_name="regenesis_action_plan.pdf",
             mime="application/pdf"
         )
-    #layer 4
-import google.generativeai as genai
-import os
-
 # ---------------- LAYER 4 ----------------
 # ===============================
 # 🌟 LAYER 4 — AI STARTUP GENERATOR
