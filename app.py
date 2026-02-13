@@ -147,7 +147,7 @@ div[data-testid="stProgressBar"] > div > div {
 }
 
 .footer-container {
-    max-width: 1200px;
+    max-width: 2000px;
     width: 100%;
     margin: auto;
 }
