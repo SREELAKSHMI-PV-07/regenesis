@@ -16,6 +16,7 @@ st.set_page_config(
 @st.cache_data
 def load_data():
     market_df = pd.read_csv("plastic_market_prices.csv")
+    country_df["Country"] = country_df["Country"].str.strip().str.lower()
     country_df = pd.read_excel("country_data.xlsx").iloc[:, :2]
     country_df.columns = ["country", "mismanaged"]
     return market_df, country_df
@@ -49,10 +50,8 @@ with col2:
     )
 
 with col3:
-    country = st.selectbox(
-        "Select Country",
-        country_df["country"]
-    )
+    country_list = sorted(country_df["Country"].unique())
+country = st.selectbox("Select Country", country_list)
 
 st.divider()
 
