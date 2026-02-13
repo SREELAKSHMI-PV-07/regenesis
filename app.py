@@ -1,39 +1,41 @@
 import streamlit as st
 import pandas as pd
 
-# -----------------------------
-# Page Config
-# -----------------------------
+# -------------------------------------------------
+# Page Setup
+# -------------------------------------------------
 st.set_page_config(
     page_title="ReGenesis – Layer 1",
     page_icon="♻️",
     layout="wide"
 )
 
-# -----------------------------
+# -------------------------------------------------
 # Load Data
-# -----------------------------
+# -------------------------------------------------
 @st.cache_data
 def load_data():
+
     market_df = pd.read_csv("plastic_market_prices.csv")
 
     country_df = pd.read_excel("country_data.xlsx")
     country_df = country_df.iloc[:, :2]
     country_df.columns = ["country", "mismanaged"]
 
-    # Clean
+    # Clean country column
     country_df["country"] = (
         country_df["country"]
         .astype(str)
-        .str.strip()
         .str.lower()
+        .str.strip()
     )
 
+    # Force numeric mismanaged
     country_df["mismanaged"] = pd.to_numeric(
         country_df["mismanaged"], errors="coerce"
     )
 
-    # Remove rows where mismanaged is NaN
+    # Remove bad rows
     country_df = country_df.dropna(subset=["mismanaged"])
 
     return market_df, country_df
@@ -41,22 +43,23 @@ def load_data():
 
 market_df, country_df = load_data()
 
-# -----------------------------
-# Title
-# -----------------------------
+# -------------------------------------------------
+# UI Header
+# -------------------------------------------------
 st.title("♻️ ReGenesis – Feasibility Intelligence Engine")
 st.markdown("### Layer 1: Opportunity & Feasibility Analysis")
+
 st.divider()
 
-# -----------------------------
+# -------------------------------------------------
 # Inputs
-# -----------------------------
+# -------------------------------------------------
 col1, col2, col3 = st.columns(3)
 
 with col1:
     waste_type = st.selectbox(
         "Select Waste Type",
-        market_df["category"].unique()
+        sorted(market_df["category"].dropna().unique())
     )
 
 with col2:
@@ -74,41 +77,41 @@ with col3:
 
 st.divider()
 
-# -----------------------------
+# -------------------------------------------------
 # Market Data
-# -----------------------------
-market_row = market_df[market_df["category"] == waste_type].iloc[0]
+# -------------------------------------------------
+market_row = market_df[market_df["category"] == waste_type]
 
-price_usd = float(market_row["avg_price_per_kg_usd"])
-demand_score = float(market_row["demand_score_1_to_10"])
+price_usd = float(market_row["avg_price_per_kg_usd"].values[0])
+demand_score = float(market_row["demand_score_1_to_10"].values[0])
 
-# -----------------------------
+# -------------------------------------------------
 # Country Data
-# -----------------------------
-country_row = country_df[country_df["country"] == country].iloc[0]
+# -------------------------------------------------
+country_row = country_df[country_df["country"] == country]
 
-mismanaged = float(country_row["mismanaged"])
+mismanaged = float(country_row["mismanaged"].values[0])
 
-# -----------------------------
+# -------------------------------------------------
 # Calculations
-# -----------------------------
+# -------------------------------------------------
 price_inr = price_usd * 80
 market_value = quantity * price_inr
 
-# Environmental pressure scaling
+# Normalize environmental pressure
 env_factor = mismanaged / country_df["mismanaged"].max()
 
 # Production scale factor
 scale_factor = quantity / 100
 
-# Core feasibility formula
+# Core score
 raw_score = price_usd * demand_score * env_factor * scale_factor
 
 feasibility_score = round(min(100, raw_score * 8), 2)
 
-# -----------------------------
+# -------------------------------------------------
 # Status
-# -----------------------------
+# -------------------------------------------------
 if feasibility_score < 30:
     status = "🔴 High Risk"
 elif feasibility_score < 70:
@@ -116,9 +119,9 @@ elif feasibility_score < 70:
 else:
     status = "🟢 High Potential"
 
-# -----------------------------
+# -------------------------------------------------
 # Dashboard
-# -----------------------------
+# -------------------------------------------------
 st.subheader("📊 Opportunity Dashboard")
 
 c1, c2, c3 = st.columns(3)
@@ -131,13 +134,16 @@ st.markdown(f"### Status: {status}")
 
 st.divider()
 
+# -------------------------------------------------
+# Explanation
+# -------------------------------------------------
 with st.expander("ℹ️ How Feasibility Score Works"):
     st.write("""
 • Market price & demand  
 • Environmental pressure (mismanaged waste)  
 • Production scale  
 
-The score dynamically adjusts based on selected country, waste type, and scale.
+Score dynamically adjusts based on selected inputs.
 """)
 
 st.caption("ReGenesis – Circular Economy Intelligence | Layer 1 MVP")
