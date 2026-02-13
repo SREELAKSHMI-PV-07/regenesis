@@ -131,39 +131,52 @@ div[data-testid="stProgressBar"] > div > div {
 
 /* ================= FOOTER ================= */
 
+/* FOOTER */
 .footer {
-    margin-top: 80px;
-    padding: 40px 20px;
+    margin-top: 120px;
+    padding: 60px 20px;
+    width: 100%;
     background: rgba(255,255,255,0.03);
     backdrop-filter: blur(10px);
     border-top: 1px solid rgba(255,255,255,0.08);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
     text-align: center;
 }
 
+.footer-container {
+    max-width: 1200px;
+    width: 100%;
+    margin: auto;
+}
+
 .footer-title {
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 600;
     background: linear-gradient(90deg,#2ECC71,#16A085);
     -webkit-background-clip:text;
     color:transparent;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
 }
 
 .footer-sub {
-    font-size: 14px;
+    font-size: 15px;
     color: #94A3B8;
-    margin-bottom: 15px;
+    margin-bottom: 18px;
 }
 
 .footer-icons {
-    font-size: 20px;
-    margin-bottom: 15px;
+    font-size: 22px;
+    margin-bottom: 18px;
 }
 
 .footer-bottom {
-    font-size: 12px;
+    font-size: 13px;
     color: #64748B;
 }
+
 
 
 </style>
