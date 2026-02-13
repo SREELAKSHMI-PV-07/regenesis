@@ -11,12 +11,13 @@ st.set_page_config(
 # ---------------- LOAD DATA ----------------
 @st.cache_data
 def load_data():
-    # MARKET DATA
+
+    # -------- MARKET DATA --------
     market_df = pd.read_csv("plastic_market_prices.csv")
     market_df.columns = market_df.columns.str.strip()
     market_df = market_df.loc[:, ~market_df.columns.str.contains("^Unnamed")]
 
-    # COUNTRY DATA
+    # -------- COUNTRY DATA --------
     country_df = pd.read_excel("country_data.xlsx")
     country_df = country_df.dropna(axis=1, how="all")
     country_df = country_df.iloc[:, :2]
@@ -91,9 +92,7 @@ price_usd = float(row["avg_price_per_kg_usd"])
 demand_score = float(row["demand_score_1_to_10"])
 
 # ---------------- COUNTRY MATCH ----------------
-match = country_df[
-    country_df["country"] == selected_country
-]
+match = country_df[country_df["country"] == selected_country]
 
 if match.empty:
     mismanaged = 5
@@ -125,17 +124,25 @@ st.subheader("📊 Opportunity Dashboard")
 c1, c2, c3, c4 = st.columns(4)
 
 c1.metric("💰 Revenue Potential (₹)", f"{round(market_value,2):,}")
-
-# ✅ Removed (%) from label
 c2.metric("🌍 Mismanaged Waste", round(mismanaged, 2))
-
 c3.metric("📦 Scale Multiplier", round(scale_factor, 2))
 c4.metric("📈 Feasibility Score", feasibility_score)
 
 st.markdown(f"### Status: {status}")
 
+# ---------------- FEASIBILITY EXPLANATION (NOW BELOW STATUS) ----------------
+st.markdown("### 🎯 What the Feasibility Score Means")
+
+if feasibility_score < 30:
+    st.error("0–30: Low Opportunity. High risk and limited profitability potential.")
+elif feasibility_score < 70:
+    st.warning("30–70: Moderate Opportunity. Needs optimization and strategic planning.")
+else:
+    st.success("70–100: High Potential. Strong market, scale, and environmental advantage.")
+
 st.divider()
 
+# ---------------- INFO SECTION ----------------
 with st.expander("ℹ️ How Feasibility Score Works"):
     st.write("""
 • Market strength → Price × Demand  
@@ -146,16 +153,3 @@ All factors integrate to estimate circular business feasibility.
 """)
 
 st.caption("ReGenesis – Circular Economy Intelligence | Layer 1 MVP")
-st.divider()
-
-left_space, right_box = st.columns([1, 2])
-
-with right_box:
-    st.markdown("### 🎯 What the Feasibility Score Means")
-
-    if feasibility_score < 30:
-        st.error("🔴 0–30: Not viable. Low impact or low profit potential.")
-    elif feasibility_score < 70:
-        st.warning("🟡 30–70: Moderate opportunity. Needs optimization and strategic planning.")
-    else:
-        st.success("🟢 70–100: Strong startup potential. High economic and environmental viability.")
