@@ -311,3 +311,51 @@ Feasibility Score: {feasibility_score}
             file_name="regenesis_action_plan.pdf",
             mime="application/pdf"
         )
+    #layer 4
+st.divider()
+st.subheader("⭐ Layer 4 – AI Startup Generator")
+
+st.markdown("""
+Turn your feasibility analysis into a complete startup blueprint using AI.
+""")
+
+if st.button("🚀 Generate AI Startup Blueprint"):
+
+    with st.spinner("Building your circular startup..."):
+
+        model = genai.GenerativeModel("gemini-1.5-flash")
+
+        prompt = f"""
+You are a startup mentor.
+
+Waste Type: {waste_type}
+Country: {country}
+Feasibility Score: {feasibility_score}
+
+Generate:
+
+1. Startup Name
+2. Problem Statement
+3. Solution
+4. Revenue Model
+5. 6 Month Action Plan
+6. 30 Second Pitch
+"""
+
+        response = model.generate_content(prompt)
+
+        st.success("Your AI Startup Blueprint is ready!")
+
+        st.markdown("""
+        <style>
+        .generator-card {
+            background:#020617;
+            padding:25px;
+            border-radius:18px;
+        }
+        </style>
+        """, unsafe_allow_html=True)
+
+        st.markdown('<div class="generator-card">', unsafe_allow_html=True)
+        st.markdown(response.text)
+        st.markdown('</div>', unsafe_allow_html=True)
