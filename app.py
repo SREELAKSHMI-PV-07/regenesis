@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import math
 import time
+import requests
 import tempfile
 from reportlab.lib.pagesizes import A4
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
@@ -320,97 +321,31 @@ import os
 # 🌟 LAYER 4 — AI STARTUP GENERATOR
 # ===============================
 
-import google.generativeai as genai
-from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
-import tempfile
+def generate_startup_blueprint(prompt):
 
-st.divider()
+    headers = {
+        "Authorization": f"Bearer {st.secrets['OPENROUTER_API_KEY']}",
+        "Content-Type": "application/json"
+    }
 
-st.markdown("## 🚀 Layer 4 – AI Startup Blueprint")
+    data = {
+        "model": "mistralai/mistral-7b-instruct",
+        "messages": [
+            {"role": "user", "content": prompt}
+        ],
+        "temperature": 0.7,
+        "max_tokens": 800
+    }
 
-st.markdown("""
-Turn your feasibility analysis into a complete circular startup plan using AI.
-""")
+    response = requests.post(
+        "https://openrouter.ai/api/v1/chat/completions",
+        headers=headers,
+        json=data
+    )
 
-# ---------- Gemini Setup ----------
-try:
-    genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
-except:
-    st.error("Gemini API key missing. Add GEMINI_API_KEY in Streamlit secrets.")
-    st.stop()
+    result = response.json()
 
-# ---------- Button ----------
-if st.button("🧠 Generate AI Startup Blueprint"):
-
-    with st.spinner("Designing your circular startup..."):
-
-        model = genai.GenerativeModel("models/gemini-1.5-flash")
-
-        prompt = f"""
-You are a professional circular economy startup mentor.
-
-Waste Type: {waste_type}
-Country: {country}
-Feasibility Score: {feasibility_score}
-
-Generate a clean structured startup plan:
-
-1. Startup Name
-2. Core Problem
-3. Circular Solution
-4. Revenue Model
-5. 6 Month Action Plan (monthly)
-6. CO2 Reduction Impact
-7. Job Creation Estimate
-8. 30 Second Investor Pitch
-
-Keep answers realistic, practical and short.
-"""
-
-        try:
-            response = model.generate_content(prompt)
-            ai_text = response.text
-
-            st.success("Startup Blueprint Generated!")
-
-            # ---------- UI Card ----------
-            st.markdown("""
-            <style>
-            .ai-card {
-                background: rgba(255,255,255,0.06);
-                padding:25px;
-                border-radius:20px;
-                margin-top:20px;
-                box-shadow:0 10px 25px rgba(0,0,0,0.4);
-            }
-            </style>
-            """, unsafe_allow_html=True)
-
-            st.markdown('<div class="ai-card">', unsafe_allow_html=True)
-            st.markdown(ai_text)
-            st.markdown('</div>', unsafe_allow_html=True)
-
-            # ---------- PDF Export ----------
-            styles = getSampleStyleSheet()
-            tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
-
-            doc = SimpleDocTemplate(tmp.name)
-            story = []
-
-            for line in ai_text.split("\n"):
-                story.append(Paragraph(line, styles["Normal"]))
-                story.append(Spacer(1, 6))
-
-            doc.build(story)
-
-            with open(tmp.name, "rb") as f:
-                st.download_button(
-                    "📄 Download Startup Blueprint PDF",
-                    data=f,
-                    file_name="regenesis_startup_blueprint.pdf",
-                    mime="application/pdf"
-                )
-
-        except Exception as e:
-            st.error("AI failed. Check Gemini quota or model access.")
+    if "choices" in result:
+        return result["choices"][0]["message"]["content"]
+    else:
+        return "AI generation failed. Please check API usage."
