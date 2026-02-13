@@ -1,46 +1,6 @@
 import streamlit as st
 import pandas as pd
-st.markdown("""
-<style>
 
-.stApp {
-    background: #0B0F1C;
-    color: #E5E9F0;
-    font-family: 'Inter', sans-serif;
-}
-
-.hero {
-    text-align: center;
-    padding-top: 40px;
-    padding-bottom: 30px;
-}
-
-.hero h1 {
-    font-size: 52px;
-    font-weight: 700;
-    color: white;
-}
-
-.hero p {
-    font-size: 20px;
-    color: #A0AEC0;
-}
-
-.glass-card {
-    background: rgba(255,255,255,0.05);
-    padding: 20px;
-    border-radius: 20px;
-    backdrop-filter: blur(8px);
-    box-shadow: 0px 10px 40px rgba(0,0,0,0.4);
-}
-
-.section {
-    padding-top: 40px;
-    padding-bottom: 40px;
-}
-
-</style>
-""", unsafe_allow_html=True)
 
 # ---------------- PAGE CONFIG ----------------
 st.set_page_config(
