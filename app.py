@@ -239,31 +239,60 @@ i3.metric("👷 Jobs Created", jobs_created)
 i4.metric("🌊 Plastic Diverted (kg)", round(plastic_diverted,2))
 
 # ---------------- ACTION PLAN ----------------
+# ---------------- ACTION PLAN ----------------
 st.markdown("<div class='section-title'>Startup Action Plan</div>", unsafe_allow_html=True)
 
-weeks = st.slider("Select Roadmap Duration (Weeks)", 4, 24, 12)
+weeks = st.slider("Select Roadmap Duration (Weeks)", 1, 24, 8)
 
 if st.button("🚀 Generate Action Plan"):
 
+    st.success("Your personalized roadmap is ready!")
+
     roadmap_text = f"""
 STARTUP ROADMAP
+
 Waste Type: {waste_type}
 Country: {country.title()}
 Feasibility Score: {feasibility_score}
+
+-----------------------------------------
 """
 
-    st.success("Your personalized roadmap is ready!")
+    # Weekly roadmap generation
+    for week in range(1, weeks + 1):
 
-    if weeks >= 1:
-        phase1 = "• Validate sourcing\n• Market research\n• Identify customers\n"
-        st.markdown(f"<div class='timeline-card' style='border-color:#22C55E;'><div class='phase-title'>Phase 1 (Weeks 1–4)</div><div class='phase-content'>{phase1}</div></div>", unsafe_allow_html=True)
-        roadmap_text += phase1
+        if week <= 4:
+            task = "Market research, supplier identification, waste sourcing validation."
+            color = "#22C55E"
 
-    if weeks >= 5:
-        phase2 = "• Build MVP\n• Test workflow\n• Prepare pitch\n"
-        st.markdown(f"<div class='timeline-card' style='border-color:#EAB308;'><div class='phase-title'>Phase 2 (Weeks 5–8)</div><div class='phase-content'>{phase2}</div></div>", unsafe_allow_html=True)
-        roadmap_text += phase2
+        elif week <= 8:
+            task = "Prototype development, recycling process testing, cost optimization."
+            color = "#EAB308"
 
+        elif week <= 12:
+            task = "Pilot production, early customers onboarding, revenue tracking."
+            color = "#F97316"
+
+        elif week <= 16:
+            task = "Operational improvements, branding, compliance approvals."
+            color = "#3B82F6"
+
+        else:
+            task = "Scaling operations, partnerships, marketing expansion, investor outreach."
+            color = "#EF4444"
+
+        # Display in UI
+        st.markdown(f"""
+        <div class='timeline-card' style='border-color:{color};'>
+            <div class='phase-title'>Week {week}</div>
+            <div class='phase-content'>{task}</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        # Add to PDF text
+        roadmap_text += f"\nWeek {week}: {task}\n"
+
+    # -------- PDF GENERATION --------
     styles = getSampleStyleSheet()
     tmp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
     doc = SimpleDocTemplate(tmp_file.name, pagesize=A4)
