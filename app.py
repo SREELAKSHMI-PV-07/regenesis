@@ -323,7 +323,7 @@ if st.button("🚀 Generate AI Startup Blueprint"):
 
     with st.spinner("Building your circular startup..."):
 
-        model = genai.GenerativeModel("gemini-1.5-flash")
+        model = genai.GenerativeModel("gemini-pro")
 
         prompt = f"""
 You are a startup mentor.
