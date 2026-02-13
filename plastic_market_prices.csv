@@ -1,0 +1,8 @@
+material_type,category,avg_price_per_tonne_usd,avg_price_per_kg_usd,region,last_updated_year,market_trend,recyclable,demand_score_1_to_10
+PET,Plastic Bottles,300,0.3,Global,2024,Stable,True,9
+HDPE,Hard Plastic Containers,700,0.7,Global,2024,Rising,True,8
+LDPE,Plastic Bags & Film,450,0.45,Global,2024,Stable,True,6
+PP,Food Containers & Caps,500,0.5,Global,2024,Rising,True,7
+PS,Styrofoam & Packaging,350,0.35,Global,2024,Volatile,True,4
+PVC,Pipes & Industrial Plastic,250,0.25,Global,2024,Low Demand,True,5
+ABS,Electronics Plastic,800,0.8,Global,2024,Rising,True,8
