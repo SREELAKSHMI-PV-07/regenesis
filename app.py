@@ -237,13 +237,15 @@ i4.metric("🌊 Plastic Diverted (kg)", round(plastic_diverted,2))
 
 # ---------------- LAYER 3 ----------------
 # ---------------- LAYER 3 ----------------
+# ---------------- LAYER 3 ----------------
 st.markdown("## 🗺️ Layer 3 – Action Plan Generator")
 
 weeks = st.slider("Select Roadmap Duration (Weeks)", 4, 24, 12)
 
 if st.button("🚀 Generate Action Plan"):
 
-    # -------- ROADMAP CONTENT --------
+    st.success("Your personalized roadmap is ready!")
+
     roadmap_text = f"""
 STARTUP ROADMAP
 
@@ -252,45 +254,79 @@ Country: {country.title()}
 Feasibility Score: {feasibility_score}%
 
 -----------------------------------------
+"""
 
+    st.markdown("### 📋 Your Startup Roadmap")
+
+    # -------- PHASE 1 --------
+    if weeks >= 1:
+        phase1 = """
 PHASE 1 – DISCOVERY (Weeks 1–4)
 • Validate waste sourcing
 • Visit recyclers
 • Conduct market research
 • Identify first customers
+"""
+        st.markdown("#### 🟢 Phase 1 – Discovery")
+        st.write(phase1)
+        roadmap_text += phase1
 
-PHASE 2 – PROTOTYPE (Weeks 5–8)
+    # -------- PHASE 2 --------
+    if weeks >= 5:
+        phase2_end = min(weeks, 8)
+        phase2 = f"""
+PHASE 2 – PROTOTYPE (Weeks 5–{phase2_end})
 • Build minimum viable product
 • Test recycling workflow
 • Calculate CO₂ savings
 • Prepare pitch deck
+"""
+        st.markdown("#### 🟡 Phase 2 – Prototype")
+        st.write(phase2)
+        roadmap_text += phase2
 
-PHASE 3 – PILOT (Weeks 9–12)
+    # -------- PHASE 3 --------
+    if weeks >= 9:
+        phase3_end = min(weeks, 12)
+        phase3 = f"""
+PHASE 3 – PILOT (Weeks 9–{phase3_end})
 • Run pilot batches
 • Track revenue
 • Optimize operations
 • Secure early adopters
+"""
+        st.markdown("#### 🟠 Phase 3 – Pilot")
+        st.write(phase3)
+        roadmap_text += phase3
 
-PHASE 4 – OPTIMIZATION (Weeks 13–16)
+    # -------- PHASE 4 --------
+    if weeks >= 13:
+        phase4_end = min(weeks, 16)
+        phase4 = f"""
+PHASE 4 – OPTIMIZATION (Weeks 13–{phase4_end})
 • Improve efficiency
 • Strengthen supplier partnerships
 • Apply for green grants
 • Develop branding strategy
+"""
+        st.markdown("#### 🔵 Phase 4 – Optimization")
+        st.write(phase4)
+        roadmap_text += phase4
 
-PHASE 5 – SCALE (Weeks 17+)
+    # -------- PHASE 5 --------
+    if weeks >= 17:
+        phase5 = f"""
+PHASE 5 – SCALE (Weeks 17–{weeks})
 • Expand sourcing network
 • Launch marketing campaigns
 • Approach investors
 • Scale production
 """
+        st.markdown("#### 🔴 Phase 5 – Scale")
+        st.write(phase5)
+        roadmap_text += phase5
 
-    # -------- SHOW ROADMAP IN UI --------
-    st.success("Your personalized roadmap is ready!")
-
-    st.markdown("### 📋 Your Startup Roadmap")
-    st.text(roadmap_text)
-
-    # -------- CREATE PDF --------
+    # -------- PDF GENERATION --------
     styles = getSampleStyleSheet()
     tmp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
     doc = SimpleDocTemplate(tmp_file.name, pagesize=A4)
@@ -302,7 +338,6 @@ PHASE 5 – SCALE (Weeks 17+)
 
     doc.build(story)
 
-    # -------- DOWNLOAD BUTTON --------
     with open(tmp_file.name, "rb") as f:
         st.download_button(
             label="📄 Download Roadmap PDF",
