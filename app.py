@@ -238,7 +238,41 @@ i4.metric("🌊 Plastic Diverted (kg)", round(plastic_diverted,2))
 # ---------------- LAYER 3 ----------------
 # ---------------- LAYER 3 ----------------
 # ---------------- LAYER 3 ----------------
+# ---------------- LAYER 3 ----------------
 st.markdown("## 🗺️ Layer 3 – Action Plan Generator")
+
+# -------- Timeline Styling --------
+st.markdown("""
+<style>
+
+/* Timeline Card */
+.timeline-card {
+    background: rgba(255,255,255,0.04);
+    padding: 20px;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    border-left: 6px solid;
+    backdrop-filter: blur(8px);
+    transition: 0.3s ease;
+}
+
+.timeline-card:hover {
+    transform: translateX(6px);
+}
+
+.phase-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.phase-content {
+    font-size: 14px;
+    color: #CBD5E1;
+}
+
+</style>
+""", unsafe_allow_html=True)
 
 weeks = st.slider("Select Roadmap Duration (Weeks)", 4, 24, 12)
 
@@ -256,75 +290,96 @@ Feasibility Score: {feasibility_score}%
 -----------------------------------------
 """
 
-    st.markdown("### 📋 Your Startup Roadmap")
-
     # -------- PHASE 1 --------
     if weeks >= 1:
         phase1 = """
-PHASE 1 – DISCOVERY (Weeks 1–4)
-• Validate waste sourcing
-• Visit recyclers
-• Conduct market research
+• Validate waste sourcing  
+• Visit recyclers  
+• Conduct market research  
 • Identify first customers
 """
-        st.markdown("#### 🟢 Phase 1 – Discovery")
-        st.write(phase1)
-        roadmap_text += phase1
+        st.markdown(f"""
+        <div class="timeline-card" style="border-color:#22C55E;">
+            <div class="phase-title">🟢 Phase 1 – Discovery (Weeks 1–4)</div>
+            <div class="phase-content">{phase1}</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        roadmap_text += "\nPHASE 1 – DISCOVERY (Weeks 1–4)\n" + phase1
 
     # -------- PHASE 2 --------
     if weeks >= 5:
         phase2_end = min(weeks, 8)
-        phase2 = f"""
-PHASE 2 – PROTOTYPE (Weeks 5–{phase2_end})
-• Build minimum viable product
-• Test recycling workflow
-• Calculate CO₂ savings
+
+        phase2 = """
+• Build minimum viable product  
+• Test recycling workflow  
+• Calculate CO₂ savings  
 • Prepare pitch deck
 """
-        st.markdown("#### 🟡 Phase 2 – Prototype")
-        st.write(phase2)
-        roadmap_text += phase2
+        st.markdown(f"""
+        <div class="timeline-card" style="border-color:#EAB308;">
+            <div class="phase-title">🟡 Phase 2 – Prototype (Weeks 5–{phase2_end})</div>
+            <div class="phase-content">{phase2}</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        roadmap_text += f"\nPHASE 2 – PROTOTYPE (Weeks 5–{phase2_end})\n" + phase2
 
     # -------- PHASE 3 --------
     if weeks >= 9:
         phase3_end = min(weeks, 12)
-        phase3 = f"""
-PHASE 3 – PILOT (Weeks 9–{phase3_end})
-• Run pilot batches
-• Track revenue
-• Optimize operations
+
+        phase3 = """
+• Run pilot batches  
+• Track revenue  
+• Optimize operations  
 • Secure early adopters
 """
-        st.markdown("#### 🟠 Phase 3 – Pilot")
-        st.write(phase3)
-        roadmap_text += phase3
+        st.markdown(f"""
+        <div class="timeline-card" style="border-color:#F97316;">
+            <div class="phase-title">🟠 Phase 3 – Pilot (Weeks 9–{phase3_end})</div>
+            <div class="phase-content">{phase3}</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        roadmap_text += f"\nPHASE 3 – PILOT (Weeks 9–{phase3_end})\n" + phase3
 
     # -------- PHASE 4 --------
     if weeks >= 13:
         phase4_end = min(weeks, 16)
-        phase4 = f"""
-PHASE 4 – OPTIMIZATION (Weeks 13–{phase4_end})
-• Improve efficiency
-• Strengthen supplier partnerships
-• Apply for green grants
+
+        phase4 = """
+• Improve efficiency  
+• Strengthen supplier partnerships  
+• Apply for green grants  
 • Develop branding strategy
 """
-        st.markdown("#### 🔵 Phase 4 – Optimization")
-        st.write(phase4)
-        roadmap_text += phase4
+        st.markdown(f"""
+        <div class="timeline-card" style="border-color:#3B82F6;">
+            <div class="phase-title">🔵 Phase 4 – Optimization (Weeks 13–{phase4_end})</div>
+            <div class="phase-content">{phase4}</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        roadmap_text += f"\nPHASE 4 – OPTIMIZATION (Weeks 13–{phase4_end})\n" + phase4
 
     # -------- PHASE 5 --------
     if weeks >= 17:
-        phase5 = f"""
-PHASE 5 – SCALE (Weeks 17–{weeks})
-• Expand sourcing network
-• Launch marketing campaigns
-• Approach investors
+        phase5 = """
+• Expand sourcing network  
+• Launch marketing campaigns  
+• Approach investors  
 • Scale production
 """
-        st.markdown("#### 🔴 Phase 5 – Scale")
-        st.write(phase5)
-        roadmap_text += phase5
+        st.markdown(f"""
+        <div class="timeline-card" style="border-color:#EF4444;">
+            <div class="phase-title">🔴 Phase 5 – Scale (Weeks 17–{weeks})</div>
+            <div class="phase-content">{phase5}</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        roadmap_text += f"\nPHASE 5 – SCALE (Weeks 17–{weeks})\n" + phase5
 
     # -------- PDF GENERATION --------
     styles = getSampleStyleSheet()
