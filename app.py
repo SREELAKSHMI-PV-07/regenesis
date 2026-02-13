@@ -263,3 +263,101 @@ with st.expander("ℹ️ How Impact is Calculated"):
 
 These are conservative MVP estimates for hackathon demonstration.
 """)
+
+
+import io
+
+st.subheader("🗺️ Layer 3 – 6-Month Action Plan")
+
+# -------- Timeline Selector --------
+weeks = st.slider("Select Roadmap Duration (Weeks)", 4, 24, 24)
+
+# -------- Icons --------
+p1, p2, p3, p4 = st.columns(4)
+
+p1.image("https://cdn-icons-png.flaticon.com/512/1828/1828817.png", width=60)
+p2.image("https://cdn-icons-png.flaticon.com/512/3064/3064197.png", width=60)
+p3.image("https://cdn-icons-png.flaticon.com/512/190/190411.png", width=60)
+p4.image("https://cdn-icons-png.flaticon.com/512/4320/4320372.png", width=60)
+
+# -------- Generate Plan --------
+if st.button("🚀 Generate Action Plan"):
+
+    roadmap_text = f"""
+6-MONTH STARTUP ROADMAP
+
+Waste Type: {waste_type}
+Country: {country.title()}
+Feasibility Score: {feasibility_score}%
+
+PHASE 1 – DISCOVERY (Weeks 1–4)
+• Validate {waste_type} sourcing
+• Visit recyclers
+• Market validation
+• Customer interviews
+
+PHASE 2 – PROTOTYPE (Weeks 5–8)
+• Build MVP
+• Test recycling flow
+• CO2 estimation
+• Prepare pitch deck
+
+PHASE 3 – PILOT (Weeks 9–12)
+• Run pilot batches
+• Track revenue
+• Optimize operations
+• Identify first customers
+
+PHASE 4 – OPTIMIZATION (Weeks 13–16)
+• Improve efficiency
+• Strengthen partnerships
+• Apply for green grants
+• Impact documentation
+
+PHASE 5 – SCALE (Weeks 17–{weeks})
+• Expand sourcing
+• Finalize pricing
+• Launch marketing
+• Investor/demo prep
+"""
+
+    st.success("Your personalized roadmap is ready!")
+
+    st.markdown(f"""
+### 🟢 Phase 1 – Discovery (Weeks 1–4)
+• Validate waste sourcing  
+• Visit recyclers  
+• Market research  
+
+### 🟡 Phase 2 – Prototype (Weeks 5–8)
+• Build MVP  
+• Test workflows  
+• CO₂ tracking  
+
+### 🟠 Phase 3 – Pilot (Weeks 9–12)
+• Pilot runs  
+• Revenue tracking  
+• Early customers  
+
+### 🔵 Phase 4 – Optimization (Weeks 13–16)
+• Improve operations  
+• Partnerships  
+• Grants  
+
+### 🔴 Phase 5 – Scale (Weeks 17–{weeks})
+• Marketing launch  
+• Pricing finalize  
+• Investor demo  
+""")
+
+    # -------- Download Section --------
+    buffer = io.StringIO()
+    buffer.write(roadmap_text)
+
+    st.download_button(
+        label="📥 Download Roadmap",
+        data=buffer.getvalue(),
+        file_name="regenesis_6_month_roadmap.txt",
+        mime="text/plain"
+    )
+
