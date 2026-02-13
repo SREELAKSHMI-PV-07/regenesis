@@ -160,3 +160,106 @@ Mismanaged waste is represented in Metric Tonnes and normalized relative to the 
 """)
 
 st.caption("ReGenesis – Circular Economy Intelligence | Layer 1 MVP")
+
+
+
+import math
+import time
+
+st.subheader("🌱 Layer 2 – Impact Simulator")
+
+# -------------------------------------------------
+# ICON ROW (Images)
+# -------------------------------------------------
+img1, img2, img3, img4 = st.columns(4)
+
+img1.image("https://cdn-icons-png.flaticon.com/512/3135/3135706.png", width=60)
+img2.image("https://cdn-icons-png.flaticon.com/512/2933/2933894.png", width=60)
+img3.image("https://cdn-icons-png.flaticon.com/512/1995/1995574.png", width=60)
+img4.image("https://cdn-icons-png.flaticon.com/512/427/427735.png", width=60)
+
+# -------------------------------------------------
+# CALCULATIONS
+# -------------------------------------------------
+
+# Revenue projection (6 months)
+monthly_revenue = market_value * 22
+six_month_revenue = monthly_revenue * 6
+
+# CO2 reduction (approx 2.5kg per kg plastic)
+co2_saved = quantity * 2.5
+
+# Job creation (1 job per 500kg/month)
+jobs_created = max(1, math.ceil((quantity * 22) / 500))
+
+# Plastic diverted (based on mismanaged %)
+plastic_diverted = quantity * (mismanaged / 100)
+
+# -------------------------------------------------
+# METRICS
+# -------------------------------------------------
+
+i1, i2, i3, i4 = st.columns(4)
+
+i1.metric("📆 6-Month Revenue (₹)", f"{round(six_month_revenue,2):,}")
+i2.metric("🌍 CO₂ Reduced (kg)", round(co2_saved,2))
+i3.metric("👷 Jobs Created", jobs_created)
+i4.metric("🌊 Plastic Diverted (kg)", round(plastic_diverted,2))
+
+st.divider()
+
+# -------------------------------------------------
+# 🔥 Animated Feasibility Progress Bar
+# -------------------------------------------------
+
+st.markdown("### ⚡ Feasibility Progress")
+
+progress = st.progress(0)
+
+for i in range(int(feasibility_score)):
+    time.sleep(0.01)
+    progress.progress(i + 1)
+
+st.caption(f"Current Feasibility: {feasibility_score}%")
+
+st.divider()
+
+# -------------------------------------------------
+# 🎛 Scenario Buttons (Mini Layer 3)
+# -------------------------------------------------
+
+st.subheader("🎛 Growth Scenario")
+
+scenario = st.radio(
+    "Choose scenario:",
+    ["Conservative", "Balanced", "Aggressive"],
+    horizontal=True
+)
+
+if scenario == "Conservative":
+    multiplier = 0.7
+elif scenario == "Balanced":
+    multiplier = 1.0
+else:
+    multiplier = 1.4
+
+scenario_revenue = six_month_revenue * multiplier
+
+st.metric("📊 Scenario 6-Month Revenue (₹)", f"{round(scenario_revenue,2):,}")
+
+# -------------------------------------------------
+# Explanation
+# -------------------------------------------------
+
+with st.expander("ℹ️ How Impact is Calculated"):
+    st.write("""
+📆 Revenue → Daily value × 22 days × 6 months  
+
+🌍 CO₂ → ~2.5kg saved per kg recycled  
+
+👷 Jobs → 1 job per 500kg/month  
+
+🌊 Plastic diverted → Quantity × Mismanaged %
+
+These are conservative MVP estimates for hackathon demonstration.
+""")
