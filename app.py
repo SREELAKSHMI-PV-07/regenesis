@@ -236,20 +236,61 @@ i3.metric("👷 Jobs Created", jobs_created)
 i4.metric("🌊 Plastic Diverted (kg)", round(plastic_diverted,2))
 
 # ---------------- LAYER 3 ----------------
+# ---------------- LAYER 3 ----------------
 st.markdown("## 🗺️ Layer 3 – Action Plan Generator")
 
 weeks = st.slider("Select Roadmap Duration (Weeks)", 4, 24, 12)
 
 if st.button("🚀 Generate Action Plan"):
+
+    # -------- ROADMAP CONTENT --------
     roadmap_text = f"""
 STARTUP ROADMAP
+
 Waste Type: {waste_type}
 Country: {country.title()}
 Feasibility Score: {feasibility_score}%
+
+-----------------------------------------
+
+PHASE 1 – DISCOVERY (Weeks 1–4)
+• Validate waste sourcing
+• Visit recyclers
+• Conduct market research
+• Identify first customers
+
+PHASE 2 – PROTOTYPE (Weeks 5–8)
+• Build minimum viable product
+• Test recycling workflow
+• Calculate CO₂ savings
+• Prepare pitch deck
+
+PHASE 3 – PILOT (Weeks 9–12)
+• Run pilot batches
+• Track revenue
+• Optimize operations
+• Secure early adopters
+
+PHASE 4 – OPTIMIZATION (Weeks 13–16)
+• Improve efficiency
+• Strengthen supplier partnerships
+• Apply for green grants
+• Develop branding strategy
+
+PHASE 5 – SCALE (Weeks 17+)
+• Expand sourcing network
+• Launch marketing campaigns
+• Approach investors
+• Scale production
 """
 
+    # -------- SHOW ROADMAP IN UI --------
     st.success("Your personalized roadmap is ready!")
 
+    st.markdown("### 📋 Your Startup Roadmap")
+    st.text(roadmap_text)
+
+    # -------- CREATE PDF --------
     styles = getSampleStyleSheet()
     tmp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
     doc = SimpleDocTemplate(tmp_file.name, pagesize=A4)
@@ -261,6 +302,7 @@ Feasibility Score: {feasibility_score}%
 
     doc.build(story)
 
+    # -------- DOWNLOAD BUTTON --------
     with open(tmp_file.name, "rb") as f:
         st.download_button(
             label="📄 Download Roadmap PDF",
