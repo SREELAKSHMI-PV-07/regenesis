@@ -129,54 +129,6 @@ div[data-testid="stProgressBar"] > div > div {
     background: linear-gradient(90deg,#2ECC71,#16A085);
 }
 
-/* ================= FOOTER ================= */
-
-/* FOOTER */
-.footer {
-    margin-top: 120px;
-    padding: 60px 20px;
-    width: 100%;
-    background: rgba(255,255,255,0.03);
-    backdrop-filter: blur(10px);
-    border-top: 1px solid rgba(255,255,255,0.08);
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-}
-
-.footer-container {
-    max-width: 2000px;
-    width: 100%;
-    margin: auto;
-}
-
-.footer-title {
-    font-size: 20px;
-    font-weight: 600;
-    background: linear-gradient(90deg,#2ECC71,#16A085);
-    -webkit-background-clip:text;
-    color:transparent;
-    margin-bottom: 12px;
-}
-
-.footer-sub {
-    font-size: 15px;
-    color: #94A3B8;
-    margin-bottom: 18px;
-}
-
-.footer-icons {
-    font-size: 22px;
-    margin-bottom: 18px;
-}
-
-.footer-bottom {
-    font-size: 13px;
-    color: #64748B;
-}
-
 
 
 </style>
@@ -458,18 +410,5 @@ if generate_bp:
             <div class="card-value">{country.title()}</div>
         </div>
         """, unsafe_allow_html=True)
-        st.markdown("""
-<div class="footer">
-    <div class="footer-title">ReGenesis</div>
-    <div class="footer-sub">
-        Circular Economy Intelligence Platform
-    </div>
-    <div class="footer-icons">
-        🌍 ♻️ 📊 🚀
-    </div>
-    <div class="footer-bottom">
-        Built by <b>Sreelakshmi PV</b> & <b>Muhsina S M</b><br><br>
-        © 2026 ReGenesis | Built for Sustainable Innovation
-    </div>
-</div>
-""", unsafe_allow_html=True)
+      
+
