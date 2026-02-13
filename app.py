@@ -312,6 +312,9 @@ Feasibility Score: {feasibility_score}
             mime="application/pdf"
         )
     #layer 4
+import google.generativeai as genai
+import os
+
 st.divider()
 st.subheader("⭐ Layer 4 – AI Startup Generator")
 
@@ -323,7 +326,7 @@ if st.button("🚀 Generate AI Startup Blueprint"):
 
     with st.spinner("Building your circular startup..."):
 
-        model = genai.GenerativeModel("gemini-pro")
+        model = genai.GenerativeModel("gemini-1.5-flash")
 
         prompt = f"""
 You are a startup mentor.
