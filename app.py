@@ -1,149 +1,121 @@
 import streamlit as st
 import pandas as pd
 
-# -------------------------------------------------
-# Page Setup
-# -------------------------------------------------
-st.set_page_config(
-    page_title="ReGenesis – Layer 1",
-    page_icon="♻️",
-    layout="wide"
-)
+st.set_page_config(page_title="ReGenesis", page_icon="♻️", layout="wide")
 
-# -------------------------------------------------
+# ------------------------------------
 # Load Data
-# -------------------------------------------------
+# ------------------------------------
 @st.cache_data
 def load_data():
 
     market_df = pd.read_csv("plastic_market_prices.csv")
 
-    country_df = pd.read_excel("country_data.xlsx")
-    country_df = country_df.iloc[:, :2]
+    raw_country = pd.read_excel("country_data.xlsx")
+
+    # Auto pick first two columns
+    country_df = raw_country.iloc[:, :2]
     country_df.columns = ["country", "mismanaged"]
 
-    # Clean country column
-    country_df["country"] = (
-        country_df["country"]
-        .astype(str)
-        .str.lower()
-        .str.strip()
-    )
+    country_df["country"] = country_df["country"].astype(str).str.lower().str.strip()
+    country_df["mismanaged"] = pd.to_numeric(country_df["mismanaged"], errors="coerce")
 
-    # Force numeric mismanaged
-    country_df["mismanaged"] = pd.to_numeric(
-        country_df["mismanaged"], errors="coerce"
-    )
-
-    # Remove bad rows
-    country_df = country_df.dropna(subset=["mismanaged"])
+    # Drop empty rows
+    country_df = country_df.dropna()
 
     return market_df, country_df
 
 
 market_df, country_df = load_data()
 
-# -------------------------------------------------
-# UI Header
-# -------------------------------------------------
+# ------------------------------------
+# Header
+# ------------------------------------
 st.title("♻️ ReGenesis – Feasibility Intelligence Engine")
 st.markdown("### Layer 1: Opportunity & Feasibility Analysis")
 
 st.divider()
 
-# -------------------------------------------------
+# ------------------------------------
 # Inputs
-# -------------------------------------------------
+# ------------------------------------
 col1, col2, col3 = st.columns(3)
 
 with col1:
     waste_type = st.selectbox(
         "Select Waste Type",
-        sorted(market_df["category"].dropna().unique())
+        market_df["category"].dropna().unique()
     )
 
 with col2:
-    quantity = st.number_input(
-        "Enter Quantity (kg)",
-        min_value=1,
-        step=1
-    )
+    quantity = st.number_input("Enter Quantity (kg)", min_value=1, value=10)
 
 with col3:
-    country = st.selectbox(
-        "Select Country",
-        sorted(country_df["country"].unique())
-    )
+    if len(country_df) == 0:
+        st.error("Country dataset empty!")
+        st.stop()
 
-st.divider()
+    country = st.selectbox("Select Country", sorted(country_df["country"].unique()))
 
-# -------------------------------------------------
+# ------------------------------------
 # Market Data
-# -------------------------------------------------
-market_row = market_df[market_df["category"] == waste_type]
+# ------------------------------------
+row = market_df[market_df["category"] == waste_type].iloc[0]
 
-price_usd = float(market_row["avg_price_per_kg_usd"].values[0])
-demand_score = float(market_row["demand_score_1_to_10"].values[0])
+price_usd = float(row["avg_price_per_kg_usd"])
+demand = float(row["demand_score_1_to_10"])
 
-# -------------------------------------------------
-# Country Data
-# -------------------------------------------------
-country_row = country_df[country_df["country"] == country]
+# ------------------------------------
+# Country Data SAFE
+# ------------------------------------
+match = country_df[country_df["country"] == country]
 
-mismanaged = float(country_row["mismanaged"].values[0])
+if match.empty:
+    mismanaged = 1
+else:
+    mismanaged = float(match.iloc[0]["mismanaged"])
 
-# -------------------------------------------------
+# ------------------------------------
 # Calculations
-# -------------------------------------------------
-price_inr = price_usd * 80
-market_value = quantity * price_inr
+# ------------------------------------
+market_value = quantity * price_usd * 80
 
-# Normalize environmental pressure
 env_factor = mismanaged / country_df["mismanaged"].max()
+scale = quantity / 100
 
-# Production scale factor
-scale_factor = quantity / 100
+score = price_usd * demand * env_factor * scale
+feasibility = round(min(100, score * 10), 2)
 
-# Core score
-raw_score = price_usd * demand_score * env_factor * scale_factor
-
-feasibility_score = round(min(100, raw_score * 8), 2)
-
-# -------------------------------------------------
+# ------------------------------------
 # Status
-# -------------------------------------------------
-if feasibility_score < 30:
+# ------------------------------------
+if feasibility < 30:
     status = "🔴 High Risk"
-elif feasibility_score < 70:
-    status = "🟡 Moderate Opportunity"
+elif feasibility < 70:
+    status = "🟡 Moderate"
 else:
     status = "🟢 High Potential"
 
-# -------------------------------------------------
+# ------------------------------------
 # Dashboard
-# -------------------------------------------------
+# ------------------------------------
 st.subheader("📊 Opportunity Dashboard")
 
-c1, c2, c3 = st.columns(3)
+a,b,c = st.columns(3)
 
-c1.metric("💰 Market Value (₹)", f"{round(market_value,2):,}")
-c2.metric("🌍 Mismanaged Index", round(mismanaged,2))
-c3.metric("📈 Feasibility Score", feasibility_score)
+a.metric("💰 Market Value ₹", round(market_value,2))
+b.metric("🌍 Mismanaged Index", round(mismanaged,2))
+c.metric("📈 Feasibility Score", feasibility)
 
-st.markdown(f"### Status: {status}")
+st.markdown(f"## {status}")
 
-st.divider()
-
-# -------------------------------------------------
-# Explanation
-# -------------------------------------------------
-with st.expander("ℹ️ How Feasibility Score Works"):
+# ------------------------------------
+with st.expander("How score works"):
     st.write("""
-• Market price & demand  
-• Environmental pressure (mismanaged waste)  
-• Production scale  
-
-Score dynamically adjusts based on selected inputs.
+Market Price  
+Demand  
+Environmental Pressure  
+Production Scale  
 """)
 
-st.caption("ReGenesis – Circular Economy Intelligence | Layer 1 MVP")
+st.caption("ReGenesis | Layer 1 MVP")
