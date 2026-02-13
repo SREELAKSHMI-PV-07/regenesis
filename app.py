@@ -62,24 +62,20 @@ else:
 
 # ---------------- Calculations ----------------
 
+# ---------------- Calculations ----------------
+
 price_inr = price_usd * 80
 market_value = quantity * price_inr
 
-env_score = mismanaged / 10
-scale_factor = quantity / 50
+# Normalize factors
+market_factor = (price_usd * demand_score) / 10
+env_factor = mismanaged / 100   # assume mismanaged is percentage
+scale_factor = quantity / 100
 
-dfs = price_usd * demand_score * env_score * scale_factor
+raw_score = market_factor * env_factor * scale_factor
 
-feasibility_score = round(min(100, dfs * 10), 2)
-
-# ---------------- Status ----------------
-
-if feasibility_score < 30:
-    status = "🔴 High Risk"
-elif feasibility_score < 70:
-    status = "🟡 Moderate Opportunity"
-else:
-    status = "🟢 High Potential"
+# Smooth scaling using sigmoid-like cap
+feasibility_score = round((raw_score / (raw_score + 1)) * 100, 2)
 
 # ---------------- Dashboard ----------------
 
