@@ -225,13 +225,9 @@ with col3:
     """, unsafe_allow_html=True)
 
 with col4:
-   # ---------------- FEASIBILITY PROGRESS ----------------
-st.markdown("### ⚡ Feasibility Progress")
-
-progress = st.progress(0)
-
-# Smooth animation (fast, not laggy)
-for i in range(int(feasibility_score)):
+    st.markdown("### ⚡ Feasibility Progress")
+    progress = st.progress(0)
+    for i in range(int(feasibility_score)):
     time.sleep(0.005)
     progress.progress(i + 1)
 
