@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 import math
 import time
-import io
 import tempfile
 from reportlab.lib.pagesizes import A4
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
@@ -10,7 +9,7 @@ from reportlab.lib.styles import getSampleStyleSheet
 
 # ---------------- PAGE CONFIG ----------------
 st.set_page_config(
-    page_title="ReGenesis – Layer 1",
+    page_title="ReGenesis",
     page_icon="♻️",
     layout="wide"
 )
@@ -49,6 +48,18 @@ hr { border: none; }
     color:#94A3B8;
 }
 
+/* Impact Section Title */
+.section-title {
+    text-align: center;
+    font-size: 36px;
+    font-weight: 600;
+    margin-top: 90px;
+    margin-bottom: 40px;
+    background: linear-gradient(90deg,#2ECC71,#16A085);
+    -webkit-background-clip: text;
+    color: transparent;
+}
+
 /* Glass Cards */
 .glass-card {
     background: rgba(255,255,255,0.05);
@@ -76,6 +87,32 @@ hr { border: none; }
     color: #2ECC71;
 }
 
+/* Timeline Card */
+.timeline-card {
+    background: rgba(255,255,255,0.04);
+    padding: 20px;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    border-left: 6px solid;
+    backdrop-filter: blur(8px);
+    transition: 0.3s ease;
+}
+
+.timeline-card:hover {
+    transform: translateX(6px);
+}
+
+.phase-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.phase-content {
+    font-size: 14px;
+    color: #CBD5E1;
+}
+
 /* Buttons */
 .stButton>button {
     background: linear-gradient(90deg,#2ECC71,#16A085);
@@ -84,10 +121,6 @@ hr { border: none; }
     border: none;
     padding: 10px 25px;
     font-weight: 600;
-}
-
-.stButton>button:hover {
-    transform: scale(1.05);
 }
 
 /* Progress Bar */
@@ -113,8 +146,7 @@ def load_data():
     country_df["country"] = country_df["country"].astype(str).str.strip().str.lower()
     country_df["mismanaged"] = pd.to_numeric(country_df["mismanaged"], errors="coerce")
 
-    country_df = country_df.dropna(subset=["country"])
-    country_df = country_df.reset_index(drop=True)
+    country_df = country_df.dropna(subset=["country"]).reset_index(drop=True)
 
     return market_df, country_df
 
@@ -163,14 +195,6 @@ mismanaged_factor = 1 + (mismanaged_normalized * 3)
 raw_score = (price_usd * demand_score) * scale_factor * mismanaged_factor
 feasibility_score = round(min(100, raw_score), 2)
 
-# ---------------- STATUS ----------------
-if feasibility_score < 30:
-    status = "🔴 High Risk"
-elif feasibility_score < 70:
-    status = "🟡 Moderate Opportunity"
-else:
-    status = "🟢 High Potential"
-
 # ---------------- DASHBOARD ----------------
 st.markdown("## 📊 Opportunity Dashboard")
 
@@ -208,19 +232,12 @@ with col4:
     </div>
     """, unsafe_allow_html=True)
 
-st.markdown(f"### Status: {status}")
-
-# ---------------- PROGRESS ----------------
-st.markdown("### ⚡ Feasibility Progress")
-progress = st.progress(0)
-for i in range(int(feasibility_score)):
-    time.sleep(0.01)
-    progress.progress(i + 1)
-
-st.caption(f"Current Feasibility: {feasibility_score}%")
-
-# ---------------- LAYER 2 ----------------
-st.markdown("## 🌱 Layer 2 – Impact Simulator")
+# ---------------- IMPACT SIMULATOR ----------------
+st.markdown("""
+<div class="section-title">
+    Impact Simulator
+</div>
+""", unsafe_allow_html=True)
 
 monthly_revenue = market_value * 22
 six_month_revenue = monthly_revenue * 6
@@ -229,50 +246,13 @@ jobs_created = max(1, math.ceil((quantity * 22) / 500))
 plastic_diverted = quantity * (mismanaged / 100)
 
 i1, i2, i3, i4 = st.columns(4)
-
 i1.metric("📆 6-Month Revenue (₹)", f"{round(six_month_revenue,2):,}")
 i2.metric("🌍 CO₂ Reduced (kg)", round(co2_saved,2))
 i3.metric("👷 Jobs Created", jobs_created)
 i4.metric("🌊 Plastic Diverted (kg)", round(plastic_diverted,2))
 
-# ---------------- LAYER 3 ----------------
-# ---------------- LAYER 3 ----------------
-# ---------------- LAYER 3 ----------------
-# ---------------- LAYER 3 ----------------
-st.markdown("## 🗺️ Layer 3 – Action Plan Generator")
-
-# -------- Timeline Styling --------
-st.markdown("""
-<style>
-
-/* Timeline Card */
-.timeline-card {
-    background: rgba(255,255,255,0.04);
-    padding: 20px;
-    border-radius: 15px;
-    margin-bottom: 20px;
-    border-left: 6px solid;
-    backdrop-filter: blur(8px);
-    transition: 0.3s ease;
-}
-
-.timeline-card:hover {
-    transform: translateX(6px);
-}
-
-.phase-title {
-    font-size: 18px;
-    font-weight: 600;
-    margin-bottom: 8px;
-}
-
-.phase-content {
-    font-size: 14px;
-    color: #CBD5E1;
-}
-
-</style>
-""", unsafe_allow_html=True)
+# ---------------- ACTION PLAN ----------------
+st.markdown("## 🗺️ Action Plan Generator")
 
 weeks = st.slider("Select Roadmap Duration (Weeks)", 4, 24, 12)
 
@@ -290,98 +270,17 @@ Feasibility Score: {feasibility_score}%
 -----------------------------------------
 """
 
-    # -------- PHASE 1 --------
     if weeks >= 1:
-        phase1 = """
-• Validate waste sourcing  
-• Visit recyclers  
-• Conduct market research  
-• Identify first customers
-"""
-        st.markdown(f"""
-        <div class="timeline-card" style="border-color:#22C55E;">
-            <div class="phase-title">🟢 Phase 1 – Discovery (Weeks 1–4)</div>
-            <div class="phase-content">{phase1}</div>
-        </div>
-        """, unsafe_allow_html=True)
+        phase1 = "• Validate sourcing\n• Market research\n• Identify customers\n"
+        st.markdown(f"<div class='timeline-card' style='border-color:#22C55E;'><div class='phase-title'>🟢 Phase 1 (Weeks 1–4)</div><div class='phase-content'>{phase1}</div></div>", unsafe_allow_html=True)
+        roadmap_text += phase1
 
-        roadmap_text += "\nPHASE 1 – DISCOVERY (Weeks 1–4)\n" + phase1
-
-    # -------- PHASE 2 --------
     if weeks >= 5:
-        phase2_end = min(weeks, 8)
+        phase2 = "• Build MVP\n• Test workflow\n• Prepare pitch\n"
+        st.markdown(f"<div class='timeline-card' style='border-color:#EAB308;'><div class='phase-title'>🟡 Phase 2 (Weeks 5–8)</div><div class='phase-content'>{phase2}</div></div>", unsafe_allow_html=True)
+        roadmap_text += phase2
 
-        phase2 = """
-• Build minimum viable product  
-• Test recycling workflow  
-• Calculate CO₂ savings  
-• Prepare pitch deck
-"""
-        st.markdown(f"""
-        <div class="timeline-card" style="border-color:#EAB308;">
-            <div class="phase-title">🟡 Phase 2 – Prototype (Weeks 5–{phase2_end})</div>
-            <div class="phase-content">{phase2}</div>
-        </div>
-        """, unsafe_allow_html=True)
-
-        roadmap_text += f"\nPHASE 2 – PROTOTYPE (Weeks 5–{phase2_end})\n" + phase2
-
-    # -------- PHASE 3 --------
-    if weeks >= 9:
-        phase3_end = min(weeks, 12)
-
-        phase3 = """
-• Run pilot batches  
-• Track revenue  
-• Optimize operations  
-• Secure early adopters
-"""
-        st.markdown(f"""
-        <div class="timeline-card" style="border-color:#F97316;">
-            <div class="phase-title">🟠 Phase 3 – Pilot (Weeks 9–{phase3_end})</div>
-            <div class="phase-content">{phase3}</div>
-        </div>
-        """, unsafe_allow_html=True)
-
-        roadmap_text += f"\nPHASE 3 – PILOT (Weeks 9–{phase3_end})\n" + phase3
-
-    # -------- PHASE 4 --------
-    if weeks >= 13:
-        phase4_end = min(weeks, 16)
-
-        phase4 = """
-• Improve efficiency  
-• Strengthen supplier partnerships  
-• Apply for green grants  
-• Develop branding strategy
-"""
-        st.markdown(f"""
-        <div class="timeline-card" style="border-color:#3B82F6;">
-            <div class="phase-title">🔵 Phase 4 – Optimization (Weeks 13–{phase4_end})</div>
-            <div class="phase-content">{phase4}</div>
-        </div>
-        """, unsafe_allow_html=True)
-
-        roadmap_text += f"\nPHASE 4 – OPTIMIZATION (Weeks 13–{phase4_end})\n" + phase4
-
-    # -------- PHASE 5 --------
-    if weeks >= 17:
-        phase5 = """
-• Expand sourcing network  
-• Launch marketing campaigns  
-• Approach investors  
-• Scale production
-"""
-        st.markdown(f"""
-        <div class="timeline-card" style="border-color:#EF4444;">
-            <div class="phase-title">🔴 Phase 5 – Scale (Weeks 17–{weeks})</div>
-            <div class="phase-content">{phase5}</div>
-        </div>
-        """, unsafe_allow_html=True)
-
-        roadmap_text += f"\nPHASE 5 – SCALE (Weeks 17–{weeks})\n" + phase5
-
-    # -------- PDF GENERATION --------
+    # PDF
     styles = getSampleStyleSheet()
     tmp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
     doc = SimpleDocTemplate(tmp_file.name, pagesize=A4)
