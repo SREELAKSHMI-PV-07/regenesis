@@ -348,4 +348,62 @@ def generate_startup_blueprint(prompt):
     if "choices" in result:
         return result["choices"][0]["message"]["content"]
     else:
-        return "AI generation failed. Please check API usage."
+        return "AI generation failed. Please check your API usage."
+st.divider()
+st.markdown("## ⭐ AI Startup Generator")
+
+st.markdown("""
+Turn your feasibility analysis into a complete startup blueprint powered by AI.
+""")
+
+# Safety check so app never crashes
+if "OPENROUTER_API_KEY" not in st.secrets:
+    st.warning("⚠️ OPENROUTER_API_KEY not found in Streamlit Secrets.")
+else:
+
+    if st.button("🚀 Generate AI Startup Blueprint"):
+
+        with st.spinner("Building your circular startup blueprint..."):
+
+            prompt = f"""
+You are a circular economy startup mentor.
+
+Waste Type: {waste_type}
+Country: {country}
+Feasibility Score: {feasibility_score}
+
+Generate:
+
+1. Startup Name
+2. Problem Statement
+3. Solution Description
+4. Revenue Model
+5. 6-Month Execution Plan
+6. 30-Second Investor Pitch
+
+Keep it structured and professional.
+"""
+
+            try:
+                ai_text = generate_startup_blueprint(prompt)
+
+                st.success("Your AI Startup Blueprint is ready!")
+
+                st.markdown("""
+                <style>
+                .ai-card {
+                    background: rgba(255,255,255,0.05);
+                    padding: 25px;
+                    border-radius: 20px;
+                    backdrop-filter: blur(10px);
+                    margin-top:20px;
+                }
+                </style>
+                """, unsafe_allow_html=True)
+
+                st.markdown('<div class="ai-card">', unsafe_allow_html=True)
+                st.markdown(ai_text)
+                st.markdown('</div>', unsafe_allow_html=True)
+
+            except Exception as e:
+                st.error("AI generation failed. Please check your API key or usage limits.")
