@@ -316,79 +316,86 @@ import google.generativeai as genai
 import os
 
 # ---------------- LAYER 4 ----------------
+# ===============================
+# 🌟 LAYER 4 — AI STARTUP GENERATOR
+# ===============================
+
+import google.generativeai as genai
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+import tempfile
+
 st.divider()
 
-st.markdown("<div class='section-title'>AI Startup Blueprint</div>", unsafe_allow_html=True)
+st.markdown("## 🚀 Layer 4 – AI Startup Blueprint")
 
 st.markdown("""
-Turn your feasibility analysis into a complete startup blueprint using AI.
+Turn your feasibility analysis into a complete circular startup plan using AI.
 """)
 
-# -------- Gemini Setup --------
-import google.generativeai as genai
-
+# ---------- Gemini Setup ----------
 try:
-    genai.configure(api_key=st.secrets["AIzaSyB_CH5d-b01ixW22pj8VRPziTG--n8QAlg"])
-except Exception:
-    st.error("Google API Key not found. Please add it in Streamlit Secrets.")
+    genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
+except:
+    st.error("Gemini API key missing. Add GEMINI_API_KEY in Streamlit secrets.")
     st.stop()
 
-if st.button("🚀 Generate AI Startup Blueprint"):
+# ---------- Button ----------
+if st.button("🧠 Generate AI Startup Blueprint"):
 
-    with st.spinner("Building your circular startup..."):
+    with st.spinner("Designing your circular startup..."):
 
-        try:
-            model = genai.GenerativeModel("gemini-1.5-flash-latest")
+        model = genai.GenerativeModel("models/gemini-1.5-flash")
 
-            prompt = f"""
+        prompt = f"""
 You are a professional circular economy startup mentor.
 
-Context:
 Waste Type: {waste_type}
 Country: {country}
 Feasibility Score: {feasibility_score}
 
-Generate a structured startup blueprint with clear headings:
+Generate a clean structured startup plan:
 
 1. Startup Name
-2. Problem Statement
-3. Solution
+2. Core Problem
+3. Circular Solution
 4. Revenue Model
-5. 6 Month Action Plan
-6. 30 Second Investor Pitch
+5. 6 Month Action Plan (monthly)
+6. CO2 Reduction Impact
+7. Job Creation Estimate
+8. 30 Second Investor Pitch
 
-Make it realistic, practical, and aligned with feasibility score.
-Keep formatting clean with headings.
+Keep answers realistic, practical and short.
 """
 
+        try:
             response = model.generate_content(prompt)
-
             ai_text = response.text
 
-            st.success("Your AI Startup Blueprint is ready!")
+            st.success("Startup Blueprint Generated!")
 
-            # -------- Premium Card Styling --------
+            # ---------- UI Card ----------
             st.markdown("""
             <style>
-            .generator-card {
-                background: rgba(255,255,255,0.05);
-                padding:30px;
+            .ai-card {
+                background: rgba(255,255,255,0.06);
+                padding:25px;
                 border-radius:20px;
-                backdrop-filter: blur(10px);
-                box-shadow: 0 20px 40px rgba(0,0,0,0.5);
                 margin-top:20px;
+                box-shadow:0 10px 25px rgba(0,0,0,0.4);
             }
             </style>
             """, unsafe_allow_html=True)
 
-            st.markdown('<div class="generator-card">', unsafe_allow_html=True)
+            st.markdown('<div class="ai-card">', unsafe_allow_html=True)
             st.markdown(ai_text)
             st.markdown('</div>', unsafe_allow_html=True)
 
-            # -------- PDF Download --------
+            # ---------- PDF Export ----------
             styles = getSampleStyleSheet()
-            tmp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
-            doc = SimpleDocTemplate(tmp_file.name)
+            tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
+
+            doc = SimpleDocTemplate(tmp.name)
             story = []
 
             for line in ai_text.split("\n"):
@@ -397,13 +404,13 @@ Keep formatting clean with headings.
 
             doc.build(story)
 
-            with open(tmp_file.name, "rb") as f:
+            with open(tmp.name, "rb") as f:
                 st.download_button(
-                    label="📄 Download AI Blueprint PDF",
+                    "📄 Download Startup Blueprint PDF",
                     data=f,
-                    file_name="ai_startup_blueprint.pdf",
+                    file_name="regenesis_startup_blueprint.pdf",
                     mime="application/pdf"
                 )
 
         except Exception as e:
-            st.error("AI generation failed. Please check model access or billing in Google Cloud.")
+            st.error("AI failed. Check Gemini quota or model access.")
