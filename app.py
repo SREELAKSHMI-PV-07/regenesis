@@ -225,11 +225,38 @@ with col3:
     """, unsafe_allow_html=True)
 
 with col4:
-    st.markdown("### ⚡ Feasibility Progress")
-    progress = st.progress(0)
-    for i in range(int(feasibility_score)):
-        time.sleep(0.005)
-        progress.progress(i + 1)
+    with col4:
+    st.markdown(f"""
+    <div class="glass-card">
+        <div class="card-title">Feasibility Score</div>
+        <div class="card-value">{feasibility_score}</div>
+    </div>
+    """, unsafe_allow_html=True)
+# -------- Feasibility Sliding Indicator --------
+
+st.markdown("<br>", unsafe_allow_html=True)
+
+st.markdown("""
+<div style='text-align:center;
+            font-size:20px;
+            margin-bottom:10px;
+            color:#94A3B8;'>
+Feasibility Progress Indicator
+</div>
+""", unsafe_allow_html=True)
+
+progress = st.progress(0)
+
+for i in range(int(feasibility_score)):
+    time.sleep(0.005)
+    progress.progress(i + 1)
+
+st.markdown(
+    f"<div style='text-align:center; margin-top:8px; color:#2ECC71; font-weight:600;'>"
+    f"{feasibility_score} / 100"
+    "</div>",
+    unsafe_allow_html=True
+)
 
 st.caption(f"Current Feasibility Score: {feasibility_score}")
 
