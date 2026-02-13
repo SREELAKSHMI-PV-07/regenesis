@@ -99,6 +99,13 @@ Perfect for hackathons, circular economy builders, and environmental entrepreneu
 <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/002a777a-70d3-4524-b32c-4fd8863acf19" />
 <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/ab70b026-c28d-4dee-a293-9decbf46f161" />
 
+## video
+
+
+
+https://github.com/user-attachments/assets/f78f49f2-25c3-4cae-8e07-3ae7334f5a34
+
+
 ## 🧠 How It Works
 
 ### ✔ Feasibility Score
