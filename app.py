@@ -264,100 +264,122 @@ with st.expander("ℹ️ How Impact is Calculated"):
 These are conservative MVP estimates for hackathon demonstration.
 """)
 
-
+#action plan 
 import io
+import tempfile
+from reportlab.lib.pagesizes import A4
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+from reportlab.lib.styles import getSampleStyleSheet
 
-st.subheader("🗺️ Layer 3 – 6-Month Action Plan")
+st.subheader("🗺️ Layer 3 – Action Plan Generator")
 
-# -------- Timeline Selector --------
-weeks = st.slider("Select Roadmap Duration (Weeks)", 4, 24, 24)
+# -------- Week Selector --------
+weeks = st.slider("Select Roadmap Duration (Weeks)", 4, 24, 12)
 
-# -------- Icons --------
-p1, p2, p3, p4 = st.columns(4)
+# -------- Phase Icons --------
+p1, p2, p3, p4, p5 = st.columns(5)
 
-p1.image("https://cdn-icons-png.flaticon.com/512/1828/1828817.png", width=60)
-p2.image("https://cdn-icons-png.flaticon.com/512/3064/3064197.png", width=60)
-p3.image("https://cdn-icons-png.flaticon.com/512/190/190411.png", width=60)
-p4.image("https://cdn-icons-png.flaticon.com/512/4320/4320372.png", width=60)
+p1.image("https://cdn-icons-png.flaticon.com/512/1828/1828817.png", width=50)
+p2.image("https://cdn-icons-png.flaticon.com/512/3064/3064197.png", width=50)
+p3.image("https://cdn-icons-png.flaticon.com/512/190/190411.png", width=50)
+p4.image("https://cdn-icons-png.flaticon.com/512/4320/4320372.png", width=50)
+p5.image("https://cdn-icons-png.flaticon.com/512/1828/1828970.png", width=50)
 
 # -------- Generate Plan --------
 if st.button("🚀 Generate Action Plan"):
 
     roadmap_text = f"""
-6-MONTH STARTUP ROADMAP
-
+STARTUP ROADMAP
 Waste Type: {waste_type}
 Country: {country.title()}
 Feasibility Score: {feasibility_score}%
 
-PHASE 1 – DISCOVERY (Weeks 1–4)
-• Validate {waste_type} sourcing
-• Visit recyclers
-• Market validation
-• Customer interviews
-
-PHASE 2 – PROTOTYPE (Weeks 5–8)
-• Build MVP
-• Test recycling flow
-• CO2 estimation
-• Prepare pitch deck
-
-PHASE 3 – PILOT (Weeks 9–12)
-• Run pilot batches
-• Track revenue
-• Optimize operations
-• Identify first customers
-
-PHASE 4 – OPTIMIZATION (Weeks 13–16)
-• Improve efficiency
-• Strengthen partnerships
-• Apply for green grants
-• Impact documentation
-
-PHASE 5 – SCALE (Weeks 17–{weeks})
-• Expand sourcing
-• Finalize pricing
-• Launch marketing
-• Investor/demo prep
 """
 
     st.success("Your personalized roadmap is ready!")
 
-    st.markdown(f"""
-### 🟢 Phase 1 – Discovery (Weeks 1–4)
-• Validate waste sourcing  
-• Visit recyclers  
-• Market research  
+    # Phase 1 (Weeks 1–4)
+    if weeks >= 4:
+        phase1 = """
+PHASE 1 – DISCOVERY (Weeks 1–4)
+• Validate waste sourcing
+• Visit recyclers
+• Market research
+• Customer interviews
+"""
+        st.markdown("### 🟢 Phase 1 – Discovery (Weeks 1–4)")
+        st.write(phase1)
+        roadmap_text += phase1
 
-### 🟡 Phase 2 – Prototype (Weeks 5–8)
-• Build MVP  
-• Test workflows  
-• CO₂ tracking  
+    # Phase 2 (Weeks 5–8)
+    if weeks >= 8:
+        phase2 = """
+PHASE 2 – PROTOTYPE (Weeks 5–8)
+• Build MVP
+• Test recycling flow
+• CO₂ estimation
+• Prepare pitch deck
+"""
+        st.markdown("### 🟡 Phase 2 – Prototype (Weeks 5–8)")
+        st.write(phase2)
+        roadmap_text += phase2
 
-### 🟠 Phase 3 – Pilot (Weeks 9–12)
-• Pilot runs  
-• Revenue tracking  
-• Early customers  
+    # Phase 3 (Weeks 9–12)
+    if weeks >= 12:
+        phase3 = """
+PHASE 3 – PILOT (Weeks 9–12)
+• Pilot batches
+• Revenue tracking
+• Operational optimization
+• First customers
+"""
+        st.markdown("### 🟠 Phase 3 – Pilot (Weeks 9–12)")
+        st.write(phase3)
+        roadmap_text += phase3
 
-### 🔵 Phase 4 – Optimization (Weeks 13–16)
-• Improve operations  
-• Partnerships  
-• Grants  
+    # Phase 4 (Weeks 13–16)
+    if weeks >= 16:
+        phase4 = """
+PHASE 4 – OPTIMIZATION (Weeks 13–16)
+• Improve efficiency
+• Strengthen partnerships
+• Apply for grants
+• Impact reporting
+"""
+        st.markdown("### 🔵 Phase 4 – Optimization (Weeks 13–16)")
+        st.write(phase4)
+        roadmap_text += phase4
 
-### 🔴 Phase 5 – Scale (Weeks 17–{weeks})
-• Marketing launch  
-• Pricing finalize  
-• Investor demo  
-""")
+    # Phase 5 (Weeks 17+)
+    if weeks >= 20:
+        phase5 = f"""
+PHASE 5 – SCALE (Weeks 17–{weeks})
+• Expand sourcing
+• Finalize pricing
+• Marketing launch
+• Investor/demo prep
+"""
+        st.markdown(f"### 🔴 Phase 5 – Scale (Weeks 17–{weeks})")
+        st.write(phase5)
+        roadmap_text += phase5
 
-    # -------- Download Section --------
-    buffer = io.StringIO()
-    buffer.write(roadmap_text)
+    # -------- PDF Download --------
+    styles = getSampleStyleSheet()
 
-    st.download_button(
-        label="📥 Download Roadmap",
-        data=buffer.getvalue(),
-        file_name="regenesis_6_month_roadmap.txt",
-        mime="text/plain"
-    )
+    tmp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
+    doc = SimpleDocTemplate(tmp_file.name, pagesize=A4)
+    story = []
 
+    for line in roadmap_text.split("\n"):
+        story.append(Paragraph(line, styles["Normal"]))
+        story.append(Spacer(1, 6))
+
+    doc.build(story)
+
+    with open(tmp_file.name, "rb") as f:
+        st.download_button(
+            label="📄 Download Roadmap PDF",
+            data=f,
+            file_name="regenesis_action_plan.pdf",
+            mime="application/pdf"
+        )
